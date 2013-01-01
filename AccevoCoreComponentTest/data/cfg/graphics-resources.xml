@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphics-resources>
+    <imageLoadInfo 
+        name=""
+        width="" 
+        height="" 
+        depth="" 
+        firstMipLevel="" 
+        mipLevels="" 
+        usage="" 
+        bindFlags="" 
+        cpuAccessFlags="" 
+        miscFlags=""
+        format=""
+        filter=""
+        mipFilter=""/>
+    <imageLoadInfo 
+        name=""
+        width="" 
+        height="" 
+        depth="" 
+        firstMipLevel="" 
+        mipLevels="" 
+        usage="" 
+        bindFlags="" 
+        cpuAccessFlags="" 
+        miscFlags=""
+        format=""
+        filter=""
+        mipFilter=""/>
+    
+    <inputlayout name="layout0" elements="3">
+        <element semanticName="POSITION" semanticIndex="0" format="DXGI_FORMAT_R32G32B32A32_FLOAT" inputSlot="0" alignedByteOffset="0" inputSlotClass="D3D11_INPUT_PER_VERTEX_DATA" instanceStepRate="0"/>
+        <element semanticName="POSITION" semanticIndex="1" format="DXGI_FORMAT_R32G32B32A32_FLOAT" inputSlot="1" alignedByteOffset="12" inputSlotClass="D3D11_INPUT_PER_VERTEX_DATA" instanceStepRate="0"/>
+        <element semanticName="POSITION" semanticIndex="2" format="DXGI_FORMAT_R32G32B32A32_FLOAT" inputSlot="2" alignedByteOffset="24" inputSlotClass="D3D11_INPUT_PER_VERTEX_DATA" instanceStepRate="0"/>        
+    </inputlayout>
+    <inputlayout name="layout1" elements="2">
+        <element semanticName="POSITION" semanticIndex="2" format="DXGI_FORMAT_R32G32B32A32_FLOAT" inputSlot="0" alignedByteOffset="24" inputSlotClass="D3D11_INPUT_PER_VERTEX_DATA" instanceStepRate="0"/>
+        <element semanticName="POSITION" semanticIndex="2" format="DXGI_FORMAT_R32G32B32A32_FLOAT" inputSlot="1" alignedByteOffset="24" inputSlotClass="D3D11_INPUT_PER_VERTEX_DATA" instanceStepRate="0"/>        
+    </inputlayout>
+    <inputlayout name="layout2"  elements="1">
+        <element semanticName="POSITION" semanticIndex="2" format="DXGI_FORMAT_R32G32B32A32_FLOAT" inputSlot="1" alignedByteOffset="24" inputSlotClass="D3D11_INPUT_PER_VERTEX_DATA" instanceStepRate="0"/>        
+    </inputlayout>
+    
+    <shaderResourceView name="srv0" format="DXGI_FORMAT_R8G8B8A8_UINT" viewDimension="D3D11_SRV_DIMENSION_TEXTURE2D">
+        <tex2DSRV mostDetailedMip="-1" mipLevels="2"/>
+    </shaderResourceView>    
+    <shaderResourceView name="srv1" format="DXGI_FORMAT_R8G8B8A8_UINT" viewDimension="D3D11_SRV_DIMENSION_TEXTURECUBEARRAY">
+        <texCubeArraySRV mostDetailedMip="-1" mipLevels="-1" first2DArrayFace="3" numCubes="10"/>
+    </shaderResourceView>
+    
+    <texture name="tex.background" filename="" imgLoadRef="" srvRef="" dsvRef="" rtvRef="" uavRef=""/>
+    
+</graphics-resources>

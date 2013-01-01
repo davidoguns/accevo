@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shaderViews>
+    <shaderResourceView name="" format="" viewDimension="">
+        <bufferSRV firstElement="" numElements=""/>
+        <tex1DSRV mostDetailedMip="" mipLevels=""/>
+        <tex1DArraySRV mostDetailedMip="" mipLevels="" firstArraySlice="" arraySize=""/>
+        <tex2DSRV mostDetailedMip="" mipLevels=""/>
+        <tex2DArraySRV mostDetailedMip="" mipLevels="" firstArraySlice="" arraySlice=""/>
+        <tex2DMSSRV/>
+        <tex2DMSArray firstArraySlice="" arraySize=""/>
+        <tex3DSRV mostDetailedMip="" mipLevels=""/>
+        <texCubeSRV mostDetailedMip="" mipLevels=""/>
+        <texCubeArraySRV mostDetailedMip="" mipLevels="" first2DArrayFace="" numCubes=""/>
+        <bufferExSRV firstElement="" numElements="" flags=""/>
+    </shaderResourceView>
+</shaderViews>

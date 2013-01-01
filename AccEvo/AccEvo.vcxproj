@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\aetypes.h" />
+    <ClInclude Include="src\CoreInput.h" />
+    <ClInclude Include="src\GeometryShader.h" />
+    <ClInclude Include="src\HandleManager.h" />
+    <ClInclude Include="src\BaseLogger.h" />
+    <ClInclude Include="src\Clock.h" />
+    <ClInclude Include="src\DebugOutputLogger.h" />
+    <ClInclude Include="src\DirectInput.h" />
+    <ClInclude Include="src\DirectX11DataHelper.h" />
+    <ClInclude Include="src\DXUtil.h" />
+    <ClInclude Include="src\EmptyKernelContext.h" />
+    <ClInclude Include="src\EngineKernel.h" />
+    <ClInclude Include="src\GlobalInclude.h" />
+    <ClInclude Include="src\GraphicsLayer.h" />
+    <ClInclude Include="src\GraphicsResource.h" />
+    <ClInclude Include="src\Handle.h" />
+    <ClInclude Include="src\InputControls.h" />
+    <ClInclude Include="src\KernelContext.h" />
+    <ClInclude Include="src\Map.h" />
+    <ClInclude Include="src\Mesh.h" />
+    <ClInclude Include="src\NullLogger.h" />
+    <ClInclude Include="src\PixelShader.h" />
+    <ClInclude Include="src\Process.h" />
+    <ClInclude Include="src\ProcessManager.h" />
+    <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\StringIdentifier.h" />
+    <ClInclude Include="src\Logger.h" />
+    <ClInclude Include="src\StringIntern.h" />
+    <ClInclude Include="src\StringMap.h" />
+    <ClInclude Include="src\Subsystem.h" />
+    <ClInclude Include="src\VertexShader.h" />
+    <ClInclude Include="src\XmlStreamLogger.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Clock.cpp" />
+    <ClCompile Include="src\DebugOutputLogger.cpp" />
+    <ClCompile Include="src\DirectInput.cpp" />
+    <ClCompile Include="src\DirectX11DataHelper.cpp" />
+    <ClCompile Include="src\EngineKernel.cpp" />
+    <ClCompile Include="src\GeometryShader.cpp" />
+    <ClCompile Include="src\GraphicsLayer.cpp" />
+    <ClCompile Include="src\GraphicsResource.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\NullLogger.cpp" />
+    <ClCompile Include="src\PixelShader.cpp" />
+    <ClCompile Include="src\ProcessManager.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\StringIdentifier.cpp" />
+    <ClCompile Include="src\StringIntern.cpp" />
+    <ClCompile Include="src\Subsystem.cpp" />
+    <ClCompile Include="src\VertexShader.cpp" />
+    <ClCompile Include="src\XmlStreamLogger.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F46AEA63-3FD7-43CA-94F5-6B03B1654A8D}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>AccEvo</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\EbonySeraph\Documents\Programs\shared libs\cpp\boost_1_45_0;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Users\EbonySeraph\Documents\Programs\shared libs\cpp\boost_1_45_0;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)Effects11\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalOptions>D3D11.lib dxerr.lib  DXGI.lib D3DX11.lib D3DCompiler.lib dxguid.lib dinput8.lib %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <PostBuildEvent>
+      <Command>build-dist.cmd $(TargetPath) $(TargetDir) $(ProjectDir)\src</Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>clean-dist.cmd $(TargetPath) $(TargetDir) $(ProjectDir)\src</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalOptions>D3D11.lib dxerr.lib  DXGI.lib D3DX11.lib D3DCompiler.lib dxguid.lib dinput8.lib %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <PostBuildEvent>
+      <Command>build-dist.cmd $(TargetPath) $(TargetDir) $(ProjectDir)\src</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

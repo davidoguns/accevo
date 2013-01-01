@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inputLayouts>
+    <inputlayout name="layout0" elements="3">
+        <element semanticName="POSITION" semanticIndex="0" format="DXGI_FORMAT_R32G32B32A32_FLOAT" inputSlot="0" alignedByteOffset="0" inputSlotClass="D3D11_INPUT_PER_VERTEX_DATA" instanceStepRate="0"/>
+        <element semanticName="POSITION" semanticIndex="1" format="DXGI_FORMAT_R32G32B32A32_FLOAT" inputSlot="1" alignedByteOffset="12" inputSlotClass="D3D11_INPUT_PER_VERTEX_DATA" instanceStepRate="0"/>
+        <element semanticName="POSITION" semanticIndex="2" format="DXGI_FORMAT_R32G32B32A32_FLOAT" inputSlot="2" alignedByteOffset="24" inputSlotClass="D3D11_INPUT_PER_VERTEX_DATA" instanceStepRate="0"/>        
+    </inputlayout>
+    <inputlayout name="layout1" elements="2">
+        <element semanticName="POSITION" semanticIndex="2" format="DXGI_FORMAT_R32G32B32A32_FLOAT" inputSlot="0" alignedByteOffset="24" inputSlotClass="D3D11_INPUT_PER_VERTEX_DATA" instanceStepRate="0"/>
+        <element semanticName="POSITION" semanticIndex="2" format="DXGI_FORMAT_R32G32B32A32_FLOAT" inputSlot="1" alignedByteOffset="24" inputSlotClass="D3D11_INPUT_PER_VERTEX_DATA" instanceStepRate="0"/>        
+    </inputlayout>
+    <inputlayout name="layout2"  elements="1">
+        <element semanticName="POSITION" semanticIndex="2" format="DXGI_FORMAT_R32G32B32A32_FLOAT" inputSlot="1" alignedByteOffset="24" inputSlotClass="D3D11_INPUT_PER_VERTEX_DATA" instanceStepRate="0"/>        
+    </inputlayout>
+</inputLayouts>

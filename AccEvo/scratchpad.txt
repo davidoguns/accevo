@@ -1,0 +1,31 @@
+subsystem?
+service?
+module?
+
+
+Modules:
+	(Application COnfigured, Kerenel Managed, Kernel Initialized)
+	Graphics - Direct3D
+		Provides window and back buffer for application
+		Reboot on window recreation
+	Input - DirectInput
+		
+	Sound - FMod
+
+Operations:
+	Configure, Initialize, Shutdown
+
+Engine APIs provided for application:
+	ResourceManager/Cache
+	COnfigurationManager/Cache
+	StringCache  (single kernel managed instance)
+	Logging	(single instance used by kernel)
+
+	TextureManager
+	GeometryManager
+	MaterialsEffectManager
+	Renderer
+	InputEventManager
+	SoundManager/Contexts
+	Console
+	

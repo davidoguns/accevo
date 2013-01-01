@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<textures>
+    <texture name="tex.background" filename="" imgLoadRef="" srvRef="" dsvRev="" rtvRef="" uavRef=""/>
+    <imageLoadInfo 
+        name=""
+        width="" 
+        height="" 
+        depth="" 
+        firstMipLevel="" 
+        mipLevels="" 
+        usage="" 
+        bindFlags="" 
+        cpuAccessFlags="" 
+        miscFlags=""
+        format=""
+        filter=""
+        mipFilter=""/>
+    <texture name="tex.something" filename=""/>
+    
+</textures>

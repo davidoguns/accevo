@@ -1,0 +1,27 @@
+//David Oguns
+
+#include "types.fx"
+
+cbuffer cbOutColor
+{
+	float4	color;
+};
+
+PS_OUTPUT ps_main(const in VS_OUTPUT ps_in)
+{
+	PS_OUTPUT ps_out;
+	/*
+	float3 viewDir = normalize(ps_in.pos.xyz);
+	
+	ps_out.color = 0;
+	float3 lightDir = normalize(light.pos.xyz - ps_in.wpos.xyz);
+	float NdL = dot(ps_in.normal.xyz, lightDir);
+	float R = normalize((2 * NdL * ps_in.normal.xyz) - lightDir);
+	
+	ps_out.color += saturate(light.kA * color);
+	ps_out.color += saturate(light.kD * NdL * color);
+	*/
+	ps_out.color = color;
+	
+	return ps_out;
+}

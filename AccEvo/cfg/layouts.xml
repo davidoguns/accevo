@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inputLayouts>
+    <layout name="layout0" elements="3">
+        <element semanticName="" semanticIndex="" format="" inputSlot="" alignedByteOffset="" inputSlotClass="" instanceStepRate=""/>
+        <element semanticName="" semanticIndex="" format="" inputSlot="" alignedByteOffset="" inputSlotClass="" instanceStepRate=""/>
+        <element semanticName="" semanticIndex="" format="" inputSlot="" alignedByteOffset="" inputSlotClass="" instanceStepRate=""/>        
+    </layout>
+    <layout name="layout1" elements="2">
+        <element semanticName="" semanticIndex="" format="" inputSlot="" alignedByteOffset="" inputSlotClass="" instanceStepRate=""/>
+        <element semanticName="" semanticIndex="" format="" inputSlot="" alignedByteOffset="" inputSlotClass="" instanceStepRate=""/>        
+    </layout>
+    <layout name="layout2"  elements="1">
+        <element semanticName="" semanticIndex="" format="" inputSlot="" alignedByteOffset="" inputSlotClass="" instanceStepRate=""/>        
+    </layout>
+</inputLayouts>
