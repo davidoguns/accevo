@@ -18,6 +18,7 @@ log.xml
 #Visual Studio 2010 files and directories
 *.user
 *.sdf
+*.opensdf
 Debug/
 Release/
 x86/
