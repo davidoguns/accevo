@@ -11,7 +11,6 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 #include "Subsystem.h"
 #include "GraphicsResource.h"
-#include <d3dx11effect.h>
 #include "HandleManager.h"
 #include "StringIdentifier.h"
 #include "Logger.h"
@@ -134,8 +133,6 @@ namespace Accevo
 		
 		//loads texture to a surface and makes it minimally a shader resource
 		GraphicsResource * LoadTexture(wchar_t const *filename);
-		//loads an effect from file
-		ID3DX11Effect * LoadEffect(wchar_t const *filename) const;
 		
 	protected:
 		bool GetGraphicsConfiguration(GraphicsConfigurationRequest const & gcRequested);

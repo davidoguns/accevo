@@ -19,6 +19,8 @@ Mesh::Mesh(GraphicsLayer *pGraphics, wchar_t const * file) :
 	m_nVertices(0),
 	m_nIndices(0),
 	m_nPolygons(0),
+	m_pVertexBuffer(nullptr),
+	m_pIndexBuffer(nullptr),
 	m_bInitialized(false)
 {
 	ID3D11Device *pDev = pGraphics->GetDevice();

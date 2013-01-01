@@ -643,47 +643,4 @@ namespace Accevo
 			imgLoadInfo->BindFlags,
 			nullptr, nullptr, nullptr, nullptr);
 	}
-
-	//loads an effect from file
-	ID3DX11Effect * GraphicsLayer::LoadEffect(wchar_t const *filename) const
-	{
-		HRESULT hr;
-		ID3DX11Effect *pEffect = nullptr;
-		ID3D10Blob *effectBlob = nullptr;
-		ID3D10Blob *errorBlob = nullptr;
-
-		hr = D3DX11CompileFromFile(filename,
-			NULL, NULL,							//no macros, no includes
-			NULL, //"ps_main",							//name of shader entry point function
-			"fx_5_0",							//shader target version
-			D3D10_SHADER_ENABLE_STRICTNESS,		//disables old syntax
-			NULL,								//only used if this is an FX file
-			NULL,								//no thread pump - compile synchronously
-			&effectBlob,
-			&errorBlob,
-			NULL								//HRESULT if asynchronously called
-		);
-		if(FAILED(hr))
-		{
-			AELOG_DXERR_ERROR(m_pLogger, L"Could not load effect from file.", hr);
-			AELOG_ERROR(m_pLogger, (char *)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-			errorBlob = nullptr;
-			return nullptr;
-		}
-
-		hr = D3DX11CreateEffectFromMemory(
-			effectBlob->GetBufferPointer(),
-			effectBlob->GetBufferSize(),
-			NULL,
-			m_pDevice,
-			&pEffect
-		);
-
-		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not create effect from memory!!!", hr, return nullptr);
-		DX_RELEASE(effectBlob);
-
-		return pEffect;
-	}
-
 }		//namespace Accevo

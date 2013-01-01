@@ -11,3 +11,15 @@
 *.lai
 *.la
 *.a
+
+#Known Accevo files that should always be ignored
+log.xml
+
+#Visual Studio 2010 files and directories
+*.user
+*.sdf
+Debug/
+Release/
+x86/
+x64/
+ipch/
