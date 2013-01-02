@@ -47,8 +47,8 @@ Mesh::Mesh(GraphicsLayer *pGraphics, wchar_t const * file) :
 		AFLOAT32 const *fdata = (AFLOAT32 const *)initVerts.pSysMem;
 		for(AUINT32 vIndex = 0; vIndex < m_nVertices; ++vIndex)
 		{
-			AELOG_TRACE(ENGINE_LOGGER, (wformat(L"Point: (%1%,%2%,%3%,%4%)")%fdata[0]%fdata[1]%fdata[2]%fdata[3]).str().c_str());
-			AELOG_TRACE(ENGINE_LOGGER, (wformat(L"Normal: (%1%,%2%,%3%,%4%)")%fdata[4]%fdata[5]%fdata[6]%fdata[7]).str().c_str());
+			//AELOG_TRACE(ENGINE_LOGGER, (wformat(L"Point: (%1%,%2%,%3%,%4%)")%fdata[0]%fdata[1]%fdata[2]%fdata[3]).str().c_str());
+			//ELOG_TRACE(ENGINE_LOGGER, (wformat(L"Normal: (%1%,%2%,%3%,%4%)")%fdata[4]%fdata[5]%fdata[6]%fdata[7]).str().c_str());
 			fdata += 8;		//advance 8 float items
 		}
 		//create buffer

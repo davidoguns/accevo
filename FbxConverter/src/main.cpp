@@ -161,11 +161,13 @@ void writeAccevoMesh(ofstream &of, FbxMesh *pMesh)
 			static_cast<float>(vertex[0]),
 			static_cast<float>(vertex[1]),
 			static_cast<float>(vertex[2]),
-			static_cast<float>(vertex[3]),
+			//static_cast<float>(vertex[3]),
+			1.0f,
 			static_cast<float>(normal[0]),
 			static_cast<float>(normal[1]),
 			static_cast<float>(normal[2]),
-			static_cast<float>(normal[3]),
+			//static_cast<float>(normal[3]),
+			0.0f
 		};
 		of.write((const char *)&unitOut, sizeof(float)*8);
 	}
