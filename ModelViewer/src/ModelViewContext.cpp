@@ -5,7 +5,6 @@
 #include "ModelViewContext.h"
 #include <boost\format.hpp>
 #include <accevo\EngineKernel.h>
-#include <xnamath.h>
 
 using boost::format;
 using boost::wformat;
@@ -15,7 +14,11 @@ ModelViewContext::ModelViewContext(Accevo::Logger *pLogger) :
 	m_pLogger(pLogger),
 	m_pMesh(nullptr),
 	m_pPS(nullptr),
-	m_pVS(nullptr)
+	m_pVS(nullptr),
+	world(XMMatrixIdentity()),
+	viewDistance(-80.0f),
+	viewHeight(0.0f),
+	rotation(0.0f)
 {
 	AELOG_INFO(m_pLogger, "Starting model view context.");
 }
@@ -27,7 +30,6 @@ void ModelViewContext::Start()
 	m_pGraphics = (GraphicsLayer*)m_pKernel->GetGraphicsSubSystem();
 	m_pInput = (DirectInput*)m_pKernel->GetInputSubSystem();
 
-	
 	//load vertex shader
 	wchar_t const * vsFilename = L"effects\\render_mesh.vs";
 	m_pVS = new VertexShader(m_pGraphics->GetDevice(), vsFilename);
@@ -47,9 +49,8 @@ void ModelViewContext::Start()
 	m_pVS->AttachShader(m_pGraphics->GetImmediateDeviceContext());
 	m_pPS->AttachShader(m_pGraphics->GetImmediateDeviceContext());
 
-
 	//Load mesh from file
-	m_pMesh = new Mesh(m_pGraphics, L"models\\sphere.am");
+	m_pMesh = new Mesh(m_pGraphics, L"models\\sonya.am");
 	if(!m_pMesh->IsInitialized())
 	{
 		AELOG_ERROR(m_pLogger, L"Could not load model from disk -- models\\sphere.am");
@@ -83,7 +84,37 @@ void ModelViewContext::Stop()
 //called before kernel processes are 
 void ModelViewContext::PreUpdate(float dt)
 {
+	if(m_pInput->IsControl(AEINPUT_GAMECTRL_KEYBOARD | AEINPUT_CTRLACTION_DOWN | DIK_LCONTROL))
+	{
+		dt *= 5.0f;	//accelerate everything by 5 if control is held down
+	}
 
+	if(m_pInput->IsControl(AEINPUT_GAMECTRL_KEYBOARD | DIK_W | AEINPUT_CTRLACTION_DOWN))
+	{
+		viewHeight += dt * 10.0f;
+	}
+	if(m_pInput->IsControl(AEINPUT_GAMECTRL_KEYBOARD | DIK_S | AEINPUT_CTRLACTION_DOWN))
+	{
+		viewHeight += dt * -10.0f;
+	}
+	if(m_pInput->IsControl(AEINPUT_GAMECTRL_KEYBOARD | DIK_UP | AEINPUT_CTRLACTION_DOWN))
+	{
+		viewDistance += dt * 10.0f;
+	}
+	if(m_pInput->IsControl(AEINPUT_GAMECTRL_KEYBOARD | DIK_DOWN | AEINPUT_CTRLACTION_DOWN))
+	{
+		viewDistance += dt * -10.0f;
+	}
+	if(m_pInput->IsControl(AEINPUT_GAMECTRL_KEYBOARD | DIK_LEFT | AEINPUT_CTRLACTION_DOWN))
+	{	
+		rotation += (dt * XM_PI) / 4.0f;
+	}
+	if(m_pInput->IsControl(AEINPUT_GAMECTRL_KEYBOARD | DIK_RIGHT | AEINPUT_CTRLACTION_DOWN))
+	{
+		rotation += (dt * -XM_PI) / 4.0f;
+	}
+
+	world = XMMatrixRotationY(rotation);
 }
 
 void ModelViewContext::Update(float dt)
@@ -92,25 +123,32 @@ void ModelViewContext::Update(float dt)
 	m_pGraphics->Clear(clearColor);
 
 	//XNA Math != succint expression of simple matrices
-	XMFLOAT4 eye(0.0f, 0.0f, 0.0f, 0.0f);	//eye at origin
-	XMFLOAT4 lookat(0.0f, 0.0f, 1.0f, 0.0f);	//looking down positive z
+	XMFLOAT4 eye(0.0f, viewHeight, viewDistance, 0.0f);	//eye at origin
+	XMFLOAT4 lookat(0.0f, viewHeight, 1.0f, 0.0f);	//looking down positive z
 	XMFLOAT4 up(0.0f, 1.0f, 0.0f, 0.0f);	//standard up (Y axis)
 
 	//three matrices...
 	XMMATRIX worldViewProj[3] = 
 	{
-		XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 65.0f)),	//move back 65 units into scene
+		XMMatrixTranspose(world),	//move back 65 units into scene
 		XMMatrixTranspose(XMMatrixLookAtLH(XMLoadFloat4(&eye), XMLoadFloat4(&lookat), XMLoadFloat4(&up))),
 		XMMatrixTranspose(XMMatrixPerspectiveFovLH(XM_PI/3.0f, 16.0f/9.0f, 0.1f, 1000.0f))
 	};
 	
-	XMFLOAT4	color(0.7f, 0.7f, 0.7f, 1.0f);	//color for PS
+	XMFLOAT4	color(0.8f, 0.1f, 0.2f, 1.0f);	//color for PS
+	CB_Lights cbLights;
+	cbLights.ambient = XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f);
+	cbLights.pointPosition = XMFLOAT4(30.0f, 0.0f, -70.0f, 1.0f);
+	cbLights.pointColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	cbLights.pointAttenuation = XMFLOAT4(3.0f, 0.4f, 0.001f, 1.0f);
+		
+	XMFLOAT4	lightAmbient(0.15f, 0.15f, 0.15f, 1.0f);	//ambient light
+	
 	//now ready to make some calls
 	ID3D11DeviceContext *pDev = m_pGraphics->GetImmediateDeviceContext();
 	m_pVS->SetConstantBufferDataByName(pDev, "cbWorldViewProj", (void const *)worldViewProj);
 	m_pPS->SetConstantBufferDataByName(pDev, "cbOutColor", (void const *)&color);
-	
-
+	m_pPS->SetConstantBufferDataByName(pDev, "cbLights", (void const *)&cbLights);
 
 	m_pMesh->Draw(pDev);
 

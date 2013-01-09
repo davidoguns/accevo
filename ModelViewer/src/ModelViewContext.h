@@ -14,6 +14,8 @@
 #include <accevo\VertexShader.h>
 #include <accevo\GeometryShader.h>
 
+#include <xnamath.h>
+
 class ModelViewContext : public Accevo::KernelContext
 {
 public:
@@ -41,6 +43,19 @@ protected:
 	Accevo::PixelShader					*m_pPS;
 
 	Accevo::Mesh						*m_pMesh;
+
+	Accevo::AFLOAT32					viewHeight;
+	Accevo::AFLOAT32					viewDistance;
+	XMMATRIX							world;
+	Accevo::AFLOAT32					rotation;
+};
+
+struct CB_Lights
+{
+	XMFLOAT4	ambient;
+	XMFLOAT4	pointPosition;
+	XMFLOAT4	pointColor;
+	XMFLOAT4	pointAttenuation;
 };
 
 #endif

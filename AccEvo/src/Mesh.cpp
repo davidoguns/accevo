@@ -32,6 +32,8 @@ Mesh::Mesh(GraphicsLayer *pGraphics, wchar_t const * file) :
 		fin.read((char*)&m_nVertices, sizeof(AUINT32));
 		fin.read((char*)&m_nIndices, sizeof(AUINT32));
 		fin.read((char*)&m_nPolygons, sizeof(AUINT32));
+
+		AELOG_INFO(ENGINE_LOGGER, (wformat(L"Vertices[%1%], Indices[%2%], Polygons[%3%]")%m_nVertices%m_nIndices%m_nPolygons).str().c_str());
 	
 		D3D11_BUFFER_DESC vBufferDesc;
 		ZeroMemory(&vBufferDesc, sizeof(D3D11_BUFFER_DESC));		//clear structure

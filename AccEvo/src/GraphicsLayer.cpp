@@ -152,7 +152,8 @@ namespace Accevo
 				gd->pvMonitors.push_back(monitor);
 			
 				//get number of display modes for monitor
-				pMonitor->GetDisplayModeList(gcRequested.dxgi_format, 0, &monitor->numDisplayModes, NULL);
+				hr = pMonitor->GetDisplayModeList(gcRequested.dxgi_format, 0, &monitor->numDisplayModes, NULL);
+				AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get display mode list for monitor", hr, continue;);
 				//create vector large enough to hold data for all
 				monitor->pDisplayModes = boost::shared_array<DXGI_MODE_DESC>(
 					new DXGI_MODE_DESC[monitor->numDisplayModes]);

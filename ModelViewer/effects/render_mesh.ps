@@ -7,21 +7,24 @@ cbuffer cbOutColor
 	float4	color;
 };
 
+
+cbuffer cbLights
+{
+	float4	A;		//ambient, r,g,b,(unusued)
+	float4	pointPosition;
+	float4	pointColor;
+	float4	pointAttenuation;	
+}
+
 PS_OUTPUT ps_main(const in VS_OUTPUT ps_in)
 {
 	PS_OUTPUT ps_out;
-	/*
-	float3 viewDir = normalize(ps_in.pos.xyz);
-	
-	ps_out.color = 0;
-	float3 lightDir = normalize(light.pos.xyz - ps_in.wpos.xyz);
-	float NdL = dot(ps_in.normal.xyz, lightDir);
-	float R = normalize((2 * NdL * ps_in.normal.xyz) - lightDir);
-	
-	ps_out.color += saturate(light.kA * color);
-	ps_out.color += saturate(light.kD * NdL * color);
-	*/
-	ps_out.color = color;
+	ps_out.color = color * A;	//multiply by ambient light
+	float4 lightDir = ps_in.pos - pointPosition;
+	float d = dot(ps_in.normal, lightDir);	//dot scalar factor
+	float dist = distance(ps_in.pos, pointPosition);	//distance to light source
+	float a = 1.0f/(pointAttenuation.x + pointAttenuation.y*dist + pointAttenuation.z*pow(dist,2));  //attenuation factor
+	ps_out.color += a * d * pointColor;		//attenuation, times dot product, times the color of the point
 	
 	return ps_out;
 }

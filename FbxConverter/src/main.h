@@ -6,17 +6,32 @@
 #include <fbxsdk.h>
 #include <fstream>
 #include <string>
+#include <list>
+#include <stack>
+
+
+struct Mesh
+{
+	std::list<FbxVector4>			vertices;
+	std::list<FbxVector4>			normals;
+	std::list<unsigned _int32>		indices;
+	unsigned _int32					nPolygons;
+	std::string						*pStrDiffuseFile;
+};	//growing mesh
+
+/**
+  * Get mesh data recursively.
+  */
+void getMeshData(FbxManager *pFbxMgr, Mesh &mesh, FbxNode *node);
 
 /*
  * Writes the supplied mesh from the FBX SDK.
  *
  */
-void writeAccevoMesh(std::ofstream &of, FbxMesh *pMesh);
-
+void writeAccevoMesh(std::ofstream &of, Mesh const &mesh);
 
 /*
- * Given a root node imported by the importer, returns the
- * mesh node with the given name.
+ *	Multiply a position vector by an affine matrix
+ *  CM - column-major
  */
-FbxMesh * getMeshByName(FbxManager *& pFbxMgr, std::string const & fbxFileName, std::string const & meshName);
-
+FbxVector4 MultiplyMatrixCM(FbxAMatrix const &matrix, FbxVector4 const &vector);
