@@ -35,6 +35,10 @@ namespace Accevo
 			ProcessControlBlock &pcb = m_allProcessBlocks.GetData(hProcess);
 			//add to list to be added in next start frame (in case this is called mid-frame)
 			m_addedProcesses.push_back(hProcess);
+			pcb.pProcess = pProcess;
+			pcb.running = running;
+			pcb.started = false;
+			pcb.killed = false;
 		}
 		return hProcess;
 	}
@@ -101,6 +105,8 @@ namespace Accevo
 				pcb.killed = false;
 				//add to running process list
 				m_runningProcessList.push_back(pcbHandle);
+
+				m_allProcesses.push_back(pcbHandle);
 			}
 		);
 		//clear to add list

@@ -14,9 +14,11 @@
 #include <accevo\VertexShader.h>
 #include <accevo\GeometryShader.h>
 
+#include <accevo\FpsNotifierProcess.h>
+
 #include <xnamath.h>
 
-class ModelViewContext : public Accevo::KernelContext
+class ModelViewContext : public Accevo::KernelContext, public Accevo::FpsNotifierProcess::FpsListener
 {
 public:
 	ModelViewContext(Accevo::Logger *pLogger);
@@ -32,11 +34,16 @@ public:
 	virtual void Update(float dt);
 	virtual void PostUpdate(float dt);
 
+	//From Accevo::FpsNotifierProcess::FpsListener
+	void NotifyFps(Accevo::AFLOAT32 fps);
+
 protected:
 	Accevo::Logger						*m_pLogger;
 	Accevo::EngineKernel				*m_pKernel;
 	Accevo::GraphicsLayer				*m_pGraphics;
 	Accevo::DirectInput					*m_pInput;
+
+	Accevo::FpsNotifierProcess			*m_pFpsNotifier;
 
 	//could use more descriptive names eh?
 	Accevo::VertexShader				*m_pVS;

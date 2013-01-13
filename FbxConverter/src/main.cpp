@@ -252,6 +252,7 @@ void getMeshData(FbxManager *pFbxMgr, Mesh &mesh, FbxNode *node)
 	for(unsigned _int32 mIndex = 0; mIndex < static_cast<unsigned _int32>(node->GetMaterialCount()); ++mIndex)
 	{
 		FbxSurfaceMaterial *pMaterial = node->GetMaterial(mIndex);
+		//FbxSurfacePhong *pSurface
 		cout << "In theory material has: " << pMaterial->GetSrcObjectCount(FbxTexture::ClassId) << " textures..." << endl;
 		FbxProperty property = pMaterial->FindProperty(FbxLayerElement::sTextureChannelNames[mIndex]);
 		cout << "Texture channel name: " << FbxLayerElement::sTextureChannelNames[mIndex] << endl;

@@ -34,18 +34,18 @@ namespace Accevo
 		HINSTANCE				hAppInst;
 		HINSTANCE				hPrevInst;
 		LPSTR					lpCmdLine;
-		int						nCmdShow;
+		AINT32					nCmdShow;
 		//if the underlying program has a clock that it wants updated
 		//everytime the kernel updates it's own clock, specify it here
 		Clock					*programClock;
 		//logger to use for kernel messages
 		Logger					*pLogger;
 		//main window parameters
-		unsigned int			windowWidth;
-		unsigned int			windowHeight;
+		AUINT32					windowWidth;
+		AUINT32					windowHeight;
 		wchar_t const *			windowTitle;
-		bool					bFullscreen;
-		bool					bVsync;
+		ABOOL					bFullscreen;
+		ABOOL					bVsync;
 		//initial kernel context
 		KernelContext			*pInitialContext;
 	};
@@ -88,6 +88,9 @@ namespace Accevo
 		//gets the logger for the kernel, useable fallback if a log call is passed null logger
 		Logger * GetLogger() const { return m_pLogger; }
 
+		//Gets the user process manager
+		ProcessManager * GetProcessManager() { return &m_userProcessMgr; }
+
 	protected:
 		static EngineKernel				*m_pKernel;		//kernel logger
 		ABOOL							m_bIsInitialized;	//is kernel ready to be run or already running
@@ -96,7 +99,7 @@ namespace Accevo
 
 		Logger							*m_pLogger;		//logger that kernel uses
 		Clock							m_clock;		//timer to use for kernel since creation
-		float							m_dt;			//delta time since last frame (only valid when running)
+		AFLOAT32						m_dt;			//delta time since last frame (only valid when running)
 		ABOOL							m_bExit;		//exit flag sets to true when we should be closing
 
 		Subsystem						*m_pGraphics;	//graphics subsystem

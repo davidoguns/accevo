@@ -18,7 +18,8 @@ ModelViewContext::ModelViewContext(Accevo::Logger *pLogger) :
 	world(XMMatrixIdentity()),
 	viewDistance(-80.0f),
 	viewHeight(0.0f),
-	rotation(0.0f)
+	rotation(0.0f),
+	m_pFpsNotifier(nullptr)
 {
 	AELOG_INFO(m_pLogger, "Starting model view context.");
 }
@@ -59,11 +60,22 @@ void ModelViewContext::Start()
 
 	//triangle list
 	m_pGraphics->GetImmediateDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+
+	//initialize fps notifier process
+	m_pFpsNotifier = new Accevo::FpsNotifierProcess();
+	m_pFpsNotifier->RegisterNotifications(2.0f, this);
+	m_pKernel->GetProcessManager()->AddProcess(m_pFpsNotifier, true);
 }
 
 //called when context is about to not be run
 void ModelViewContext::Stop()
 {
+	if(m_pFpsNotifier)
+	{
+		delete m_pFpsNotifier;
+		m_pFpsNotifier = nullptr;
+	}
 	if(m_pVS)
 	{
 		delete m_pVS;
@@ -160,3 +172,8 @@ void ModelViewContext::PostUpdate(float dt)
 
 }
 
+//From Accevo::FpsNotifierProcess::FpsListener
+void ModelViewContext::NotifyFps(AFLOAT32 fps)
+{
+	AELOG_INFO(m_pLogger, (format("Current FPS from ModelViewer: %1%")%fps).str().c_str());
+}

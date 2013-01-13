@@ -16,7 +16,7 @@
   * composite types portable.
   **/
 namespace Accevo {
-	//only valid in MSVC++ 9.0 +
+	//only valid in MSVC++ 9.0+
 	typedef __int8					AINT8;
 	typedef __int16					AINT16;
 	typedef	__int32					AINT32;

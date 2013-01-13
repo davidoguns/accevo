@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="src\aetypes.h" />
     <ClInclude Include="src\CoreInput.h" />
+    <ClInclude Include="src\FpsNotifierProcess.h" />
     <ClInclude Include="src\GeometryShader.h" />
     <ClInclude Include="src\HandleManager.h" />
     <ClInclude Include="src\BaseLogger.h" />
@@ -50,6 +51,7 @@
     <ClCompile Include="src\DirectInput.cpp" />
     <ClCompile Include="src\DirectX11DataHelper.cpp" />
     <ClCompile Include="src\EngineKernel.cpp" />
+    <ClCompile Include="src\FpsNotifierProcess.cpp" />
     <ClCompile Include="src\GeometryShader.cpp" />
     <ClCompile Include="src\GraphicsLayer.cpp" />
     <ClCompile Include="src\GraphicsResource.cpp" />
