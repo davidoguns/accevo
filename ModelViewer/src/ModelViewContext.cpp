@@ -15,7 +15,7 @@ ModelViewContext::ModelViewContext(Accevo::Logger *pLogger) :
 	m_pMesh(nullptr),
 	m_pPS(nullptr),
 	m_pVS(nullptr),
-	world(XMMatrixIdentity()),
+	world(),
 	viewDistance(-80.0f),
 	viewHeight(0.0f),
 	rotation(0.0f),
@@ -125,8 +125,8 @@ void ModelViewContext::PreUpdate(float dt)
 	{
 		rotation += (dt * -XM_PI) / 4.0f;
 	}
-
-	world = XMMatrixRotationY(rotation);
+	
+	XMStoreFloat4x4(&world, XMMatrixRotationY(rotation));
 }
 
 void ModelViewContext::Update(float dt)
@@ -142,7 +142,7 @@ void ModelViewContext::Update(float dt)
 	//three matrices...
 	XMMATRIX worldViewProj[3] = 
 	{
-		XMMatrixTranspose(world),	//move back 65 units into scene
+		XMMatrixTranspose(XMLoadFloat4x4(&world)),	//move back 65 units into scene
 		XMMatrixTranspose(XMMatrixLookAtLH(XMLoadFloat4(&eye), XMLoadFloat4(&lookat), XMLoadFloat4(&up))),
 		XMMatrixTranspose(XMMatrixPerspectiveFovLH(XM_PI/3.0f, 16.0f/9.0f, 0.1f, 1000.0f))
 	};

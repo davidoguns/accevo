@@ -95,6 +95,10 @@ namespace Accevo
 
 	public:
 		GraphicsLayer(Logger *pLogger);
+
+		GraphicsLayer(const GraphicsLayer &) = delete;
+		GraphicsLayer& operator=(const GraphicsLayer &) = delete;
+
 		virtual ~GraphicsLayer();
 
 		//configure graphics subsystem

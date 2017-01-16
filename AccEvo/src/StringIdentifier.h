@@ -13,7 +13,7 @@ namespace Accevo
 
 	struct StringIdentifierCmp
 	{
-		bool operator()(StringIdentifier const &rhs, StringIdentifier const &lhs)
+		bool operator()(StringIdentifier const &rhs, StringIdentifier const &lhs) const
 		{
 			return rhs < lhs;
 		}

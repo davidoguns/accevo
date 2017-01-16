@@ -51,6 +51,9 @@ namespace Accevo
 		DirectInput(Logger *pLogger);
 		~DirectInput();
 
+		DirectInput(const DirectInput &) = delete;
+		DirectInput& operator=(const DirectInput &) = delete;
+
 		bool Configure(InputConfiguration const &config);
 		//from subsystem
 		virtual bool Initialize();

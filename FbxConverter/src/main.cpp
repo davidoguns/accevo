@@ -8,6 +8,7 @@
 #include "main.h"
 #include <fbxsdk.h>
 #include <limits>
+#include <algorithm>
 
 using namespace std;
 
@@ -84,6 +85,8 @@ int main(int argc, char ** argv)
 	string meshFileName(argv[1]);
 	string outputFileName(argv[2]);
 
+	
+
 	cout	<< "Opening FBX file for reading: " << meshFileName << endl
 			<< "Outputting result to AM file: " << outputFileName << endl;
 
@@ -107,7 +110,8 @@ int main(int argc, char ** argv)
 		if(!pFbxImp->Initialize(meshFileName.c_str(), -1, pFbxMgr->GetIOSettings()))
 		{
 			cout << "Call to FbxImporter::Initialize() failed.\n";
-			cout << "Error returned: " << pFbxImp->GetLastErrorString() << endl;
+			
+			cout << "Error returned: " << pFbxImp->GetStatus().GetErrorString() << endl;
 			exit(-1);	//return early, blow up
 		}//as normal
 		//initialize scene object
@@ -253,16 +257,16 @@ void getMeshData(FbxManager *pFbxMgr, Mesh &mesh, FbxNode *node)
 	{
 		FbxSurfaceMaterial *pMaterial = node->GetMaterial(mIndex);
 		//FbxSurfacePhong *pSurface
-		cout << "In theory material has: " << pMaterial->GetSrcObjectCount(FbxTexture::ClassId) << " textures..." << endl;
+		cout << "In theory material has: " << pMaterial->GetSrcObjectCount<FbxTexture>() << " textures..." << endl;
 		FbxProperty property = pMaterial->FindProperty(FbxLayerElement::sTextureChannelNames[mIndex]);
 		cout << "Texture channel name: " << FbxLayerElement::sTextureChannelNames[mIndex] << endl;
 		if(property.IsValid())
 		{
-			unsigned _int32 ltCount = property.GetSrcObjectCount(FbxFileTexture::ClassId);
+			unsigned _int32 ltCount = property.GetSrcObjectCount<FbxFileTexture>();
 			cout << "Num layered textures: " << ltCount << endl;
 			for(unsigned _int32 ltIndex = 0; ltIndex < ltCount; ++ltIndex)
 			{
-				FbxFileTexture *lLayeredTexture = FbxCast <FbxFileTexture>(property.GetSrcObject(FbxFileTexture::ClassId, ltIndex));
+				FbxFileTexture *lLayeredTexture = FbxCast <FbxFileTexture>(property.GetSrcObject<FbxFileTexture>(ltIndex));
 				cout << "Filename: " << lLayeredTexture->GetFileName() << endl;
 				switch(lLayeredTexture->GetTextureUse())
 				{
@@ -287,7 +291,7 @@ void getMeshData(FbxManager *pFbxMgr, Mesh &mesh, FbxNode *node)
 				}
 			}
 
-			unsigned _int32 tCount = property.GetSrcObjectCount(FbxTexture::ClassId);
+			unsigned _int32 tCount = property.GetSrcObjectCount<FbxFileTexture>();
 			cout << "Num textures: " << tCount << endl;
 			/*
 			FbxFileTexture *texture = property.Get<FbxFileTexture*>();
@@ -319,10 +323,11 @@ void getMeshData(FbxManager *pFbxMgr, Mesh &mesh, FbxNode *node)
 		if(!pMesh->IsTriangleMesh())
 		{
 			FbxGeometryConverter fbxGc(pFbxMgr);
-			pMesh = fbxGc.TriangulateMesh(pMesh);	//could triangulate in place
+			//pMesh = fbxGc.Triangulate(pMesh, true);	//could triangulate in place
+			fbxGc.Triangulate(pMesh, true);	//could triangulate in place
 		}
 		
-		pMesh->ComputeVertexNormals();	//compute normals
+		pMesh->GenerateNormals(true, true, false);	//compute normals
 		FbxLayerElementArrayTemplate<FbxVector4> *normals = nullptr;	//create place to hold normals
 		pMesh->GetNormals(&normals);	//write normals here
 

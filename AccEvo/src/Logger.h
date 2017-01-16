@@ -6,14 +6,13 @@
 #define _LOGGER_H_
 
 #include <ostream>
-#include <boost/noncopyable.hpp>
 #include "Clock.h"
 
 namespace Accevo
 {
 	//TODO:  Add virtual destructor to ensure derived class destructors are called properly
 	//		when Logger abstraction is used.
-	class Logger : public boost::noncopyable
+	class Logger
 	{
 	public:
 		/**

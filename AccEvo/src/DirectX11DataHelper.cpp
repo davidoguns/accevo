@@ -3,7 +3,11 @@
 
 #include "DirectX11DataHelper.h"
 #include "StringIntern.h"
+#include "StringMap.h"
 #include <string>
+#include <algorithm>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/optional.hpp>
 
 namespace Accevo
 {

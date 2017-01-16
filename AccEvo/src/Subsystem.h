@@ -6,7 +6,6 @@
 #ifndef _SUBSYSTEM_H_
 #define _SUBSYSTEM_H_
 
-#include <boost\noncopyable.hpp>
 #include "Logger.h"
 
 namespace Accevo
@@ -33,9 +32,13 @@ namespace Accevo
 
 
 
-	class Subsystem : public boost::noncopyable
+	class Subsystem
 	{
 	public:
+		Subsystem() {};
+		Subsystem(const Subsystem &) = delete;
+		Subsystem& operator=(const Subsystem &) = delete;
+
 		//virtual destructor ensures that subclasses get destructed 
 		//properly even if being called through this interface.
 		virtual ~Subsystem();

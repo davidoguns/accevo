@@ -13,6 +13,9 @@ namespace Accevo
 	class BaseLogger : public Logger
 	{
 	public:
+		BaseLogger(const BaseLogger &) = delete;
+		BaseLogger& operator=(const BaseLogger &) = delete;
+
 		//simple holds the basics to start logging information
 		BaseLogger(char const *name, Clock const & clock, LogLevel level) :
 			m_pName(name),

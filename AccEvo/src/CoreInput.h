@@ -8,21 +8,18 @@
 
 #pragma once
 
-#include <boost/noncopyable.hpp>
 #include "Subsystem.h"
 #include "Logger.h"
 
 namespace Accevo
 {
-	class CoreInput : public boost::noncopyable
+	class CoreInput
 	{
 	public:
 		//constructor to initialize underlying input API, which by no surprise is DirectInput8
 		CoreInput(Logger *pLogger);
 		//subsystems have virtual destructors
 		virtual ~CoreInput();
-
-
 
 	protected:
 	};

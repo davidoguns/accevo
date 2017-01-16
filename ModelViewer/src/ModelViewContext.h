@@ -53,7 +53,7 @@ protected:
 
 	Accevo::AFLOAT32					viewHeight;
 	Accevo::AFLOAT32					viewDistance;
-	XMMATRIX							world;
+	XMFLOAT4X4							world;
 	Accevo::AFLOAT32					rotation;
 };
 
