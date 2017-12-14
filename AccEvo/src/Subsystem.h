@@ -3,10 +3,10 @@
 //Subsystem.h
 
 
-#ifndef _SUBSYSTEM_H_
-#define _SUBSYSTEM_H_
+#pragma once
 
 #include "Logger.h"
+#include "KernelConfig.h"
 
 namespace Accevo
 {
@@ -49,7 +49,7 @@ namespace Accevo
 		//returns true if and only if the subsystem was initialized by this call
 		//It should return false if the subsystem is already initialized or if
 		//the subsystem failed to initialized fully
-		virtual bool Initialize() = 0;
+		virtual bool Initialize(SubsystemConfiguration const &) = 0;
 		//Shuts down the subsystem (and de-initializes it).  Must be 
 		//done to reconfigure and reinitialize the subsystem.
 		virtual void Shutdown() = 0;
@@ -57,5 +57,3 @@ namespace Accevo
 	protected:
 	};
 }
-
-#endif

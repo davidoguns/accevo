@@ -11,7 +11,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <vector>
-#include <boost\noncopyable.hpp>
 #include <iostream>
 
 #include "aetypes.h"
@@ -19,6 +18,7 @@
 #include "Clock.h"
 #include "Subsystem.h"
 #include "ProcessManager.h"
+#include "KernelConfig.h"
 #include "KernelContext.h"
 
 namespace Accevo
@@ -28,33 +28,14 @@ namespace Accevo
 		AEKES_SUCCESS = 0,
 	};
 
-	struct EngineKernelConfiguration
-	{
-		//parameters pass in from WinMain
-		HINSTANCE				hAppInst;
-		HINSTANCE				hPrevInst;
-		LPSTR					lpCmdLine;
-		AINT32					nCmdShow;
-		//if the underlying program has a clock that it wants updated
-		//everytime the kernel updates it's own clock, specify it here
-		Clock					*programClock;
-		//logger to use for kernel messages
-		Logger					*pLogger;
-		//main window parameters
-		AUINT32					windowWidth;
-		AUINT32					windowHeight;
-		wchar_t const *			windowTitle;
-		ABOOL					bFullscreen;
-		ABOOL					bVsync;
-		//initial kernel context
-		KernelContext			*pInitialContext;
-	};
-
-	class EngineKernel : boost::noncopyable
+	class EngineKernel
 	{
 	private:
 		EngineKernel(const EngineKernelConfiguration &kernelConfig);
 		~EngineKernel();
+
+		EngineKernel(const EngineKernel &) = delete;
+		EngineKernel & operator=(const EngineKernel &) = delete;
 
 		ABOOL IsReady() const {return m_bIsInitialized; }
 		void Shutdown();
@@ -66,8 +47,8 @@ namespace Accevo
 		ABOOL StartSubsystems();
 		void StopSubsystems();
 		
-		ABOOL StartGraphicsSubsystem();
-		ABOOL StartInputSubsystem();
+		ABOOL StartGraphicsSubsystem(SubsystemConfiguration const & config);
+		ABOOL StartInputSubsystem(SubsystemConfiguration const & config);
 
 	public:
 		static EngineKernel* CreateKernel(const EngineKernelConfiguration &kernelConfig);
@@ -95,7 +76,6 @@ namespace Accevo
 		static EngineKernel				*m_pKernel;		//kernel logger
 		ABOOL							m_bIsInitialized;	//is kernel ready to be run or already running
 		EngineKernelConfiguration		m_config;		//configuration
-		HWND							m_hWnd;			//handle to application window
 
 		Logger							*m_pLogger;		//logger that kernel uses
 		Clock							m_clock;		//timer to use for kernel since creation

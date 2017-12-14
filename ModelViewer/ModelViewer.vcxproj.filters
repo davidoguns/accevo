@@ -31,14 +31,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="effects\render_basic.fx">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="effects\types.fx">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="effects\render_plain.fx">
-      <Filter>Resource Files</Filter>
-    </None>
+    <None Include="effects\render_mesh.ps" />
+    <None Include="effects\render_mesh.vs" />
   </ItemGroup>
 </Project>

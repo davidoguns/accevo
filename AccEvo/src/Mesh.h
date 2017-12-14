@@ -6,13 +6,14 @@
 #include "aetypes.h"
 #include "GraphicsLayer.h"
 #include <D3D11.h>
-#include <boost\noncopyable.hpp>
 
 namespace Accevo {
 
-class Mesh : public boost::noncopyable
+class Mesh
 {
 public:
+	Mesh(Mesh const &) = delete;
+	Mesh& operator=(Mesh const &) = delete;
 	Mesh(GraphicsLayer *pGraphics, wchar_t const * file);	//self loading in this temporary solution approach
 
 	virtual ~Mesh();

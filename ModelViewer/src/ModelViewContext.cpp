@@ -9,6 +9,7 @@
 using boost::format;
 using boost::wformat;
 using namespace Accevo;
+using namespace DirectX;
 
 ModelViewContext::ModelViewContext(Accevo::Logger *pLogger) :
 	m_pLogger(pLogger),
@@ -51,7 +52,7 @@ void ModelViewContext::Start()
 	m_pPS->AttachShader(m_pGraphics->GetImmediateDeviceContext());
 
 	//Load mesh from file
-	m_pMesh = new Mesh(m_pGraphics, L"models\\sonya.am");
+	m_pMesh = new Mesh(m_pGraphics, L"models\\dude.am");
 	if(!m_pMesh->IsInitialized())
 	{
 		AELOG_ERROR(m_pLogger, L"Could not load model from disk -- models\\sphere.am");

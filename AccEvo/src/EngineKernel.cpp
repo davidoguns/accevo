@@ -61,17 +61,20 @@ namespace Accevo
 	{
 		AELOG_DEBUG(m_pLogger, "Constructing engine kernel...");
 
-		if(kernelConfig.programClock)
+		if(m_config.programClock)
 		{
-			m_clock.AddChild(kernelConfig.programClock);
+			m_clock.AddChild(m_config.programClock);
 		}
 
-		m_hWnd = CreateMainWindow();
-		if(!m_hWnd)
+		if (!m_config.hWnd)
 		{
-			AELOG_ERROR(m_pLogger, L"Could not create main window");
-			//no need to let this function go further
-			return;
+			m_config.hWnd = CreateMainWindow();
+			if (!m_config.hWnd)
+			{
+				AELOG_ERROR(m_pLogger, L"Could not create main window");
+				//no need to let this function go further
+				return;
+			}
 		}
 
 		if(!StartSubsystems())
@@ -92,12 +95,30 @@ namespace Accevo
 	ABOOL EngineKernel::StartSubsystems()
 	{
 		StopSubsystems();
-		if(!StartGraphicsSubsystem())
+
+		GraphicsConfigurationRequest graphicsConfig;
+		graphicsConfig.adapterIndex = 0;
+		graphicsConfig.monitorIndex = 0;
+		graphicsConfig.dxgiFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+		graphicsConfig.backBufferWidth = m_config.renderingWidth;
+		graphicsConfig.backBufferHeight = m_config.renderingHeight;
+
+		InputConfiguration inputConfig;
+		inputConfig.keyboardCoopFlags = DISCL_NONEXCLUSIVE | DISCL_FOREGROUND;
+		inputConfig.mouseCoopFlags = DISCL_NONEXCLUSIVE | DISCL_FOREGROUND;
+		inputConfig.nMaxJoysticks = 16;
+
+		SubsystemConfiguration subSystemConfig;
+		subSystemConfig.pKernelConfig = &m_config;
+		subSystemConfig.pGraphicsConfigRequest = &graphicsConfig;
+		subSystemConfig.pInputConfig = &inputConfig;
+
+		if(!StartGraphicsSubsystem(subSystemConfig))
 		{
 			AELOG_FATAL(m_pLogger, "Could not start graphics subsystem");
 			return AFALSE;
 		}
-		if(!StartInputSubsystem())
+		if(!StartInputSubsystem(subSystemConfig))
 		{
 			AELOG_FATAL(m_pLogger, "Could not start input subsystem");
 			return AFALSE;
@@ -106,30 +127,14 @@ namespace Accevo
 		return ATRUE;
 	}
 
-	ABOOL EngineKernel::StartGraphicsSubsystem()
+	ABOOL EngineKernel::StartGraphicsSubsystem(SubsystemConfiguration const & config)
 	{
 		AELOG_TRACE(m_pLogger, L"Starting graphics subsystem");
-		GraphicsLayer::GraphicsConfigurationRequest request;
-		request.adapterIndex = 0;
-		request.monitorIndex = 0;
-		request.fullscreen = m_config.bFullscreen;
-		request.hwnd = m_hWnd;
-		request.vSync = m_config.bVsync;
-		request.dxgi_format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		request.backBufferWidth = m_config.windowWidth;
-		request.backBufferHeight = m_config.windowHeight;
 
 		m_pGraphics = new GraphicsLayer(m_pLogger);
 		GraphicsLayer* graphics = (GraphicsLayer*)m_pGraphics;
-		if(!graphics->Configure(request))
-		{
-			AELOG_FATAL(m_pLogger, L"Could not configure graphics subsystem");			
-			m_pGraphics->Shutdown();
-			delete m_pGraphics;
-			m_pGraphics = nullptr;
-			return AFALSE;
-		}
-		if(!graphics->Initialize())
+
+		if(!graphics->Initialize(config))
 		{
 			AELOG_FATAL(m_pLogger, L"Could not initialize graphics subsystem");
 			m_pGraphics->Shutdown();
@@ -143,26 +148,12 @@ namespace Accevo
 		return ATRUE;
 	}
 
-	ABOOL EngineKernel::StartInputSubsystem()
+	ABOOL EngineKernel::StartInputSubsystem(SubsystemConfiguration const & config)
 	{
-		DirectInput::InputConfiguration inputCfg;
-		inputCfg.hInst = m_config.hAppInst;
-		inputCfg.hWnd = m_hWnd;
-		inputCfg.keyboardCoopFlags = DISCL_NONEXCLUSIVE | DISCL_FOREGROUND;
-		inputCfg.mouseCoopFlags = DISCL_NONEXCLUSIVE | DISCL_FOREGROUND;
-		inputCfg.nMaxJoysticks = 16;
-
 		m_pInput = new DirectInput(m_pLogger);
 		DirectInput *input = (DirectInput*)m_pInput;
-		if(!input->Configure(inputCfg))
-		{
-			AELOG_FATAL(m_pLogger, L"Could not configure input subsystem");
-			m_pInput->Shutdown();
-			delete m_pInput;
-			m_pInput = nullptr;
-			return AFALSE;
-		}
-		if(!input->Initialize())
+
+		if(!input->Initialize(config))
 		{
 			AELOG_FATAL(m_pLogger, L"Could not initialize input subsystem");			
 			m_pInput->Shutdown();
@@ -192,8 +183,8 @@ namespace Accevo
 	{
 		AELOG_TRACE(m_pLogger, "Shutting down kernel...");
 		StopSubsystems();
-		DestroyWindow(m_hWnd);
-		m_hWnd = NULL;		
+		DestroyWindow(m_config.hWnd);
+		m_config.hWnd = 0;
 		m_dt = 0;
 		m_bExit = false;
 		AELOG_TRACE(m_pLogger, "Kernel shutdown complete.");
@@ -231,7 +222,7 @@ namespace Accevo
 		//loop until engine knows it's time to exit
 		while(!m_bExit)
 		{	//handle Windows messages to be friendly to operating system
-			if(PeekMessage(&msg, m_hWnd, 0, 0, PM_REMOVE))
+			if(PeekMessage(&msg, m_config.hWnd, 0, 0, PM_REMOVE))
 			{
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
@@ -278,7 +269,6 @@ namespace Accevo
 					//set next to null
 					m_pNextRunningContext = nullptr;
 				}
-
 				//time keeping
 				prevTimeStamp = currTimeStamp;
 			}
@@ -323,11 +313,12 @@ namespace Accevo
 			return NULL;
 		}
 
+		HWND hwnd;
 		//window creation depends on fullscreen mode or not
 		if(m_config.bFullscreen)
 		{
 			AELOG_TRACE(m_pLogger, L"Creating fullscreen window.");
-			m_hWnd = CreateWindow(
+			hwnd = CreateWindow(
 				lpszWindowClassName,		//give it the window classname
 				m_config.windowTitle,	//visible window title
 				WS_POPUP | WS_VISIBLE,	//pop up window has no border/menu/style, create visible by default
@@ -347,7 +338,7 @@ namespace Accevo
 			RECT r = {0, 0, m_config.windowWidth, m_config.windowHeight};
 			AdjustWindowRect(&r, WS_CAPTION | WS_MINIMIZEBOX | WS_VISIBLE, false);
 			
-			m_hWnd = CreateWindow(
+			hwnd = CreateWindow(
 				lpszWindowClassName,		//give it the window classname
 				m_config.windowTitle,	//visible window title
 				WS_CAPTION | WS_MINIMIZEBOX | WS_VISIBLE,	//create window with standard boder and buttons, create visible by default
@@ -360,7 +351,7 @@ namespace Accevo
 				0 );				//lParam to pass to WndProc on WM_CREATE		
 		}
 
-		if(!m_hWnd)
+		if(!hwnd)
 		{
 			//show message box
 			MessageBox(NULL, L"Error creating handle to window!!!", L"Fatal Error", MB_OK | MB_ICONEXCLAMATION);
@@ -368,10 +359,10 @@ namespace Accevo
 		}
 
 		//copy to global for use in DirectInput callback functions
-		ShowWindow(m_hWnd, m_config.nCmdShow);
-		UpdateWindow(m_hWnd);
+		ShowWindow(hwnd, m_config.nCmdShow);
+		UpdateWindow(hwnd);
 
-		return m_hWnd;
+		return hwnd;
 	}
 
 	//static window procedure

@@ -1,8 +1,7 @@
 //David Oguns
 //February 6, 2011
 
-#ifndef _KERNELCONTEXT_H_
-#define _KERNELCONTEXT_H_
+#pragma once
 
 #include "aetypes.h"
 #include "GlobalInclude.h"
@@ -27,5 +26,3 @@ namespace Accevo
 
 	};
 }
-
-#endif

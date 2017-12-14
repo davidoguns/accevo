@@ -40,14 +40,17 @@ int CALLBACK WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	Accevo::Clock appClock;
 	Accevo::XmlStreamLogger logger("log.xml", "kernel", appClock, Accevo::Logger::AELOGLEVEL_TRACE);	
 	Accevo::EngineKernelConfiguration kc;
+	ZeroMemory(&kc, sizeof(Accevo::EngineKernelConfiguration));
 	kc.hAppInst = hThisInst;
 	kc.hPrevInst = hPrevInst;
 	kc.lpCmdLine = lpCmdLine;
 	kc.nCmdShow = nCmdShow;
-
+	kc.hWnd = 0;	//we want the kernel to create a window for us
 	kc.pLogger = &logger;
-	kc.windowWidth = 1280;
-	kc.windowHeight = 720;
+	kc.windowWidth = 1920;
+	kc.windowHeight = 1080;
+	kc.renderingWidth = 1920;
+	kc.renderingHeight = 1080;
 	kc.windowTitle = L"Model Viewer";
 	kc.bFullscreen = false;
 	kc.bVsync = false;
@@ -67,4 +70,3 @@ int CALLBACK WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	delete kc.pInitialContext;
 	return ret;
 }
-

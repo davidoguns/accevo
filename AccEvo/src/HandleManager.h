@@ -12,7 +12,6 @@
 #include <list>
 #include <boost\optional.hpp>
 #include <boost\format.hpp>
-#include <boost\noncopyable.hpp>
 
 /*********************************************************************
 	Handle manager must be subclassed by implementations that require 
@@ -24,7 +23,7 @@
 namespace Accevo
 {
 	template<class DataType>
-	class HandleManager : public boost::noncopyable
+	class HandleManager
 	{
 	public:
 		//ideally data should not be something heavy weight, but
@@ -47,6 +46,9 @@ namespace Accevo
 	public:
 		explicit HandleManager(Logger *pLogger);
 		virtual ~HandleManager();
+
+		HandleManager(const HandleManager &) = delete;
+		HandleManager& operator=(const HandleManager &) = delete;
 
 		//creates a handle mapping - will clobber whatever was in the entry
 		//previously without warning.  User must check if something is there

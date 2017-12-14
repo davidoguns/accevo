@@ -16,9 +16,9 @@
 #define BOOST_MEM_FN_ENABLE_STDCALL
 
 #include <boost/shared_array.hpp>
-#include <boost/noncopyable.hpp>
-#include <boost/function.hpp>
 #include <boost/optional/optional.hpp>
+
+#include <functional>
 
 /*****************************************************
 	This is a mix-in class that allows specializations to
@@ -30,11 +30,14 @@
 namespace Accevo
 {
 
-class Shader : public boost::noncopyable
+class Shader
 {
 public:
 	Shader();
 	virtual ~Shader();
+
+	Shader(const Shader &) = delete;
+	Shader& operator=(const Shader &) = delete;
 
 	ABOOL IsInitialized() const { return m_isInitialized; }
 
@@ -57,13 +60,13 @@ public:
 	virtual void AttachShader(ID3D11DeviceContext *pDeviceContext) = 0;
 	//applies constant buffers to rendering pipeline at whatever stage is specified by function
 	void ApplyConstantBuffers(ID3D11DeviceContext *pDeviceContext, 
-		 boost::function<void (ID3D11DeviceContext *, UINT, UINT, ID3D11Buffer *const *)> applyConstants);
+		 std::function<void (ID3D11DeviceContext *, UINT, UINT, ID3D11Buffer *const *)> applyConstants);
 	//applies shader resource to rendering pipeline at whatever stage is specified by function
 	void ApplyShaderResources(ID3D11DeviceContext *pDeviceContext, 
-		boost::function<void (ID3D11DeviceContext *, UINT, UINT, ID3D11ShaderResourceView * const *)> applyShaderResources);
+		std::function<void (ID3D11DeviceContext *, UINT, UINT, ID3D11ShaderResourceView * const *)> applyShaderResources);
 	//applies sampler state to rendering pipeline at whatever stage is specified by function
 	void ApplySamplerStates(ID3D11DeviceContext *pDeviceContext,
-		boost::function<void (ID3D11DeviceContext *, UINT, UINT, ID3D11SamplerState *const *)> applySamplerStates);
+		std::function<void (ID3D11DeviceContext *, UINT, UINT, ID3D11SamplerState *const *)> applySamplerStates);
 
 	struct ShaderResourceSlot
 	{

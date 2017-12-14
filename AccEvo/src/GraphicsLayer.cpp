@@ -2,7 +2,7 @@
 #include <iostream>
 #include "GraphicsLayer.h"
 #include <set>
-#include <xnamath.h>
+#include <DirectXMath.h>
 #include "DXUtil.h"
 
 #include <boost/shared_ptr.hpp>
@@ -26,7 +26,6 @@ namespace Accevo
 		m_depthStencilBuffer(nullptr),
 		m_pInfoQueue(nullptr),
 		m_pD3DDebug(nullptr),
-		m_imageLoadInfoMgr(m_pLogger),
 		m_graphicsResourceMgr(m_pLogger),
 		m_graphicsBundles(m_pLogger),
 		m_pRasterizerState(nullptr),
@@ -44,20 +43,8 @@ namespace Accevo
 		}
 	}
 
-	//configure graphics subsystem
-	bool GraphicsLayer::Configure(GraphicsConfigurationRequest const & request)
-	{
-		AELOG_DEBUG(m_pLogger, L"Configuring graphics layer");
-		if(!IsInitialized())
-		{
-			m_graphicsConfigRequest = request;
-			return true;
-		}
-		return false;
-	}
-
 	//initializes graphics subsystem for rendering to proceed
-	bool GraphicsLayer::Initialize()
+	bool GraphicsLayer::Initialize(SubsystemConfiguration const & config)
 	{
 		AELOG_DEBUG(m_pLogger, L"Initializing graphics layer");
 		if(m_isInitialized)
@@ -66,21 +53,21 @@ namespace Accevo
 			return false;
 		}
 
-		if(!CreateDeviceAndDXGIFactory(m_graphicsConfigRequest))
+		if(!CreateDeviceAndDXGIFactory(config))
 		{
 			AELOG_ERROR(m_pLogger, L"Could not initialize DXGIFactory or create DirectX11 device.");
 			Shutdown();
 			return m_isInitialized = false;
 		}
 		
-		if(!EnumerateGraphicsInfo(m_graphicsConfigRequest))
+		if(!EnumerateGraphicsInfo(config))
 		{
 			AELOG_ERROR(m_pLogger, L"Could not enumerate graphics configuration.");
 			Shutdown();
 			return m_isInitialized = false;
 		}
 
-		if(!GetGraphicsConfiguration(m_graphicsConfigRequest))
+		if(!GetGraphicsConfiguration(config))
 		{
 			AELOG_ERROR(m_pLogger, L"Could not find suitable graphics configuration.");
 			Shutdown();
@@ -132,7 +119,7 @@ namespace Accevo
 		return m_isInitialized = true;
 	}
 
-	bool GraphicsLayer::EnumerateGraphicsInfo(GraphicsConfigurationRequest const & gcRequested)
+	bool GraphicsLayer::EnumerateGraphicsInfo(SubsystemConfiguration const & config)
 	{
 		HRESULT hr;
 		IDXGIAdapter1 *pAdapter = nullptr;
@@ -152,13 +139,13 @@ namespace Accevo
 				gd->pvMonitors.push_back(monitor);
 			
 				//get number of display modes for monitor
-				hr = pMonitor->GetDisplayModeList(gcRequested.dxgi_format, 0, &monitor->numDisplayModes, NULL);
+				hr = pMonitor->GetDisplayModeList(config.pGraphicsConfigRequest->dxgiFormat, 0, &monitor->numDisplayModes, NULL);
 				AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get display mode list for monitor", hr, continue;);
 				//create vector large enough to hold data for all
 				monitor->pDisplayModes = boost::shared_array<DXGI_MODE_DESC>(
 					new DXGI_MODE_DESC[monitor->numDisplayModes]);
 				//get actual information for display modes
-				hr = pMonitor->GetDisplayModeList(gcRequested.dxgi_format, 0, 
+				hr = pMonitor->GetDisplayModeList(config.pGraphicsConfigRequest->dxgiFormat, 0,
 					&monitor->numDisplayModes, monitor->pDisplayModes.get());
 				AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not enumerate display modes of monitor!!!", hr, return false);
 			}
@@ -166,13 +153,13 @@ namespace Accevo
 		return true;
 	}
 
-	bool GraphicsLayer::CreateDeviceAndDXGIFactory(GraphicsConfigurationRequest const & gcRequested)
+	bool GraphicsLayer::CreateDeviceAndDXGIFactory(SubsystemConfiguration const & gcRequested)
 	{
 		HRESULT hr;
 		AELOG_TRACE(m_pLogger, L"Creating DirectX11 device and obtaining DXGI factory...");
 		//only request DirectX 11 or fail creation
 		D3D_FEATURE_LEVEL requestedLevels[] = {
-			D3D_FEATURE_LEVEL_11_0//,
+			D3D_FEATURE_LEVEL_11_0
 			//D3D_FEATURE_LEVEL_10_1,
 			//D3D_FEATURE_LEVEL_10_0,
 			//D3D_FEATURE_LEVEL_9_3,
@@ -222,17 +209,17 @@ namespace Accevo
 		return true;
 	}
 
-	bool GraphicsLayer::GetGraphicsConfiguration(GraphicsConfigurationRequest const & gcRequested)
+	bool GraphicsLayer::GetGraphicsConfiguration(SubsystemConfiguration const & config)
 	{
 		AELOG_TRACE(m_pLogger, L"Finding appropriate graphics mode match");
-		m_graphicsConfig.bFullscreen = gcRequested.fullscreen;
-		m_graphicsConfig.hwnd = gcRequested.hwnd;
-		m_graphicsConfig.bVSync = gcRequested.vSync;
+		m_graphicsConfig.bFullscreen = config.pKernelConfig->bFullscreen;
+		m_graphicsConfig.hwnd = config.pKernelConfig->hWnd;
+		m_graphicsConfig.bVSync = config.pKernelConfig->bVsync;
 		//Get all elements of requested configuration
 		m_graphicsConfig.device = m_vGraphicsDevices.at(
-			gcRequested.adapterIndex);
+			config.pGraphicsConfigRequest->adapterIndex);
 		m_graphicsConfig.monitor = m_graphicsConfig.device.pvMonitors.at(
-			gcRequested.monitorIndex);
+			config.pGraphicsConfigRequest->monitorIndex);
 	
 		std::set<DXGI_MODE_DESC *, Monitor::ProgRefreshScalingModeCmp> matchedModes;
 
@@ -240,9 +227,9 @@ namespace Accevo
 		for(unsigned int modeIndex = 0; modeIndex < m_graphicsConfig.monitor.numDisplayModes; ++modeIndex)
 		{
 			DXGI_MODE_DESC &mode = m_graphicsConfig.monitor.pDisplayModes[modeIndex];
-			if(mode.Format == gcRequested.dxgi_format &&
-				mode.Width == gcRequested.backBufferWidth &&
-				mode.Height == gcRequested.backBufferHeight)
+			if(mode.Format == config.pGraphicsConfigRequest->dxgiFormat &&
+				mode.Width == config.pGraphicsConfigRequest->backBufferWidth &&
+				mode.Height == config.pGraphicsConfigRequest->backBufferHeight)
 			{
 				matchedModes.insert(&mode);
 			}
@@ -614,13 +601,13 @@ namespace Accevo
 
 	GraphicsResource * GraphicsLayer::LoadTexture(wchar_t const *filename)
 	{
+		/*
 		HRESULT hr;
 		boost::optional<D3DX11_IMAGE_LOAD_INFO &> imgLoadInfo;
 
 		Handle hImgLoad;	//TODO: change //imageLoadInfoMgr.GetHandle(HashString("defaultImageLoad"));
 		imgLoadInfo = m_imageLoadInfoMgr.GetDataOptional(hImgLoad);
 
-/*
 		imgLoadInfo->BindFlags = 0;
 		imgLoadInfo->CpuAccessFlags = D3DX11_DEFAULT;
 		imgLoadInfo->Depth = D3DX11_DEFAULT;
@@ -634,7 +621,6 @@ namespace Accevo
 		imgLoadInfo->pSrcInfo = nullptr;
 		imgLoadInfo->Usage = D3D11_USAGE_DEFAULT;
 		imgLoadInfo->Format = DXGI_FORMAT_UNKNOWN;
-*/
 		ID3D11Resource *pResource = nullptr;
 
 		hr = D3DX11CreateTextureFromFile(
@@ -643,5 +629,8 @@ namespace Accevo
 		return new GraphicsResource(m_pLogger, m_pDevice, pResource,
 			imgLoadInfo->BindFlags,
 			nullptr, nullptr, nullptr, nullptr);
+
+			*/
+		return nullptr;	//TODO!! how to load textures!
 	}
 }		//namespace Accevo

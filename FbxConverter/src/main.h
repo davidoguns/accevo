@@ -9,7 +9,6 @@
 #include <list>
 #include <stack>
 
-
 struct Mesh
 {
 	std::list<FbxVector4>			vertices;

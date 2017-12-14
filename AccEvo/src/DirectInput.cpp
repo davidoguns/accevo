@@ -35,7 +35,7 @@ namespace Accevo
 		hr = lpdi->m_pEnumJoystick->SetDataFormat(&c_dfDIJoystick2);
 		AELOG_DXERR_CONDITIONAL_CODE_ERROR(lpdi->m_pLogger, L"Could not set joystick device format.", hr, return DIENUM_CONTINUE);
 
-		hr = lpdi->m_pEnumJoystick->SetCooperativeLevel(lpdi->m_config.hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+		hr = lpdi->m_pEnumJoystick->SetCooperativeLevel(lpdi->m_hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
 		AELOG_DXERR_CONDITIONAL_CODE_ERROR(lpdi->m_pLogger, L"Could not set joystick cooperative level.", hr, return DIENUM_CONTINUE);
 		
 		hr = lpdi->m_pEnumJoystick->Acquire();
@@ -96,18 +96,7 @@ namespace Accevo
 
 	}
 
-	bool DirectInput::Configure(InputConfiguration const &config)
-	{
-		if(!m_bIsInitialized)
-		{
-			m_config = config;
-			return true;
-		}
-		AELOG_WARN(m_pLogger, "Attempting to configure input while already initialized!  Shut down first.");
-		return false;
-	}
-
-	bool DirectInput::Initialize()
+	bool DirectInput::Initialize(SubsystemConfiguration const & config)
 	{
 		if(!IsInitialized())
 		{
@@ -129,7 +118,7 @@ namespace Accevo
 			m_pKeyboardState = m_KeyboardState;
 			m_pOldKeyboardState = m_KeyboardState2;
 
-			m_hr = DirectInput8Create(m_config.hInst, DIRECTINPUT_VERSION, 
+			m_hr = DirectInput8Create(config.pKernelConfig->hAppInst, DIRECTINPUT_VERSION,
 				IID_IDirectInput8, (void**)&m_pDInput, 0);
 			AELOG_DXERR_CONDITIONAL_CODE_FATAL(m_pLogger, L"Could not create DirectInput8.", m_hr, return false);
 
@@ -139,7 +128,7 @@ namespace Accevo
 			m_hr = m_pKeyboard->SetDataFormat(&c_dfDIKeyboard);
 			AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not set keyboard data format.", m_hr, return false);
 
-			m_hr = m_pKeyboard->SetCooperativeLevel(m_config.hWnd, m_config.keyboardCoopFlags);
+			m_hr = m_pKeyboard->SetCooperativeLevel(config.pKernelConfig->hWnd, config.pInputConfig->keyboardCoopFlags);
 			AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not set keyboard cooperative level.", m_hr, return false);
 
 			m_hr = m_pKeyboard->Acquire();
@@ -151,7 +140,7 @@ namespace Accevo
 			m_hr = m_pMouse->SetDataFormat(&c_dfDIMouse2);
 			AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger,L"Could not set mouse data format.", m_hr, return false);
 
-			m_hr = m_pMouse->SetCooperativeLevel(m_config.hWnd, m_config.mouseCoopFlags);
+			m_hr = m_pMouse->SetCooperativeLevel(config.pKernelConfig->hWnd, config.pInputConfig->mouseCoopFlags);
 			AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not set mouse cooperative level.", m_hr, return false);
 
 			m_hr = m_pMouse->Acquire();
@@ -161,14 +150,14 @@ namespace Accevo
 			ShowCursor(FALSE);
 
 			//Allocate memory for joystick structures
-			m_ppJoysticks = new IDirectInputDevice8*[m_config.nMaxJoysticks];
-			ZeroMemory(m_ppJoysticks, sizeof(IDirectInputDevice8*) * m_config.nMaxJoysticks);
-			m_pJoystates = new DIJOYSTATE2[m_config.nMaxJoysticks];
-			ZeroMemory(m_pJoystates, sizeof(DIJOYSTATE2) * m_config.nMaxJoysticks);
-			m_pOldJoystates = new DIJOYSTATE2[m_config.nMaxJoysticks];
-			ZeroMemory(m_pOldJoystates, sizeof(DIJOYSTATE2) * m_config.nMaxJoysticks);
-			m_pJoystickInfo = new JoystickInfo[m_config.nMaxJoysticks];			//information about each joystick
-			ZeroMemory(m_pJoystickInfo, sizeof(JoystickInfo) * m_config.nMaxJoysticks);
+			m_ppJoysticks = new IDirectInputDevice8*[config.pInputConfig->nMaxJoysticks];
+			ZeroMemory(m_ppJoysticks, sizeof(IDirectInputDevice8*) * config.pInputConfig->nMaxJoysticks);
+			m_pJoystates = new DIJOYSTATE2[config.pInputConfig->nMaxJoysticks];
+			ZeroMemory(m_pJoystates, sizeof(DIJOYSTATE2) * config.pInputConfig->nMaxJoysticks);
+			m_pOldJoystates = new DIJOYSTATE2[config.pInputConfig->nMaxJoysticks];
+			ZeroMemory(m_pOldJoystates, sizeof(DIJOYSTATE2) * config.pInputConfig->nMaxJoysticks);
+			m_pJoystickInfo = new JoystickInfo[config.pInputConfig->nMaxJoysticks];			//information about each joystick
+			ZeroMemory(m_pJoystickInfo, sizeof(JoystickInfo) * config.pInputConfig->nMaxJoysticks);
 
 			//find out how many joysticks are attached
 			m_hr = m_pDInput->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoysticksCallbackCount, &m_nJoysticks, DIEDFL_ATTACHEDONLY);

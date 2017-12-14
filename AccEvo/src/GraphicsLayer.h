@@ -6,7 +6,6 @@
 
 #include "GlobalInclude.h"
 #include <D3D11.h>
-#include <D3DX11.h>
 #include <boost/shared_array.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include "Subsystem.h"
@@ -32,19 +31,6 @@ namespace Accevo
 
 	class GraphicsLayer : public Subsystem
 	{
-	public:
-		struct GraphicsConfigurationRequest
-		{
-			unsigned int backBufferWidth;
-			unsigned int backBufferHeight;
-			bool fullscreen;
-			unsigned int adapterIndex;
-			unsigned int monitorIndex;
-			HWND hwnd;
-			DXGI_FORMAT dxgi_format;
-			bool vSync;
-		};
-
 	private:
 		struct Monitor
 		{
@@ -101,11 +87,8 @@ namespace Accevo
 
 		virtual ~GraphicsLayer();
 
-		//configure graphics subsystem
-		bool Configure(GraphicsConfigurationRequest const & config);
-
 		//initializes graphics subsystem for rendering to proceed
-		virtual bool Initialize();
+		virtual bool Initialize(SubsystemConfiguration const & config);
 		//used to check if graphics subsystem has initialized properly
 		virtual bool IsInitialized() const { return m_isInitialized; }
 
@@ -117,7 +100,6 @@ namespace Accevo
 
 		//present image to screen
 		virtual void Present();
-
 
 		//shuts down the graphics subsystem by cleaning up everything associated with it
 		virtual void Shutdown();
@@ -139,13 +121,13 @@ namespace Accevo
 		GraphicsResource * LoadTexture(wchar_t const *filename);
 		
 	protected:
-		bool GetGraphicsConfiguration(GraphicsConfigurationRequest const & gcRequested);
-		bool EnumerateGraphicsInfo(GraphicsConfigurationRequest const & gcRequested);
+		bool GetGraphicsConfiguration(SubsystemConfiguration const & gcRequested);
+		bool EnumerateGraphicsInfo(SubsystemConfiguration const & gcRequested);
 		bool InitSwapChainAndMainBuffers();
 		bool InitMainBuffers();
 		void ReleaseSwapChainAndMainBuffers();
 		void ReleaseMainBuffers();
-		bool CreateDeviceAndDXGIFactory(GraphicsConfigurationRequest const & gcRequested);
+		bool CreateDeviceAndDXGIFactory(SubsystemConfiguration const & gcRequested);
 		bool GetBackBufferGraphicsSurface();
 		bool CreateDepthStencilSurface();
 		bool SetupViewport();
@@ -169,12 +151,10 @@ namespace Accevo
 		ID3D11DepthStencilState			*m_pDepthStencilState;
 		
 		GraphicsConfiguration			m_graphicsConfig;				//acheived configuration
-		GraphicsConfigurationRequest	m_graphicsConfigRequest;		//requested configuration
 		ID3D11Debug						*m_pD3DDebug;			//debugging info
 		ID3D11InfoQueue					*m_pInfoQueue;			//debugging info
 
 		HandleManager<GraphicsBundle>			m_graphicsBundles;
-		HandleManager<D3DX11_IMAGE_LOAD_INFO>	m_imageLoadInfoMgr;
 		HandleManager<GraphicsResource *>		m_graphicsResourceMgr;
 	};
 }	//namespace Accevo

@@ -28,7 +28,7 @@ namespace Accevo
 	//to be started at the start of the next frame
 	Handle ProcessManager::AddProcess(Process *pProcess, bool running)
 	{
-		Handle hProcess = m_allProcessBlocks.CreateEntry();
+		const Handle& hProcess = m_allProcessBlocks.CreateEntry();
 		if(!hProcess.IsNull())
 		{
 			//get memory of newly created process block

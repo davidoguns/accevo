@@ -1,10 +1,7 @@
 //DirectInput.h
 //November 19, 2009
 
-
-
-#ifndef DIRECT_INPUT_H
-#define DIRECT_INPUT_H
+#pragma once
 
 #define DIRECTINPUT_VERSION		0x0800
 
@@ -38,25 +35,14 @@ namespace Accevo
 	class DirectInput : public Subsystem
 	{
 	public:
-		struct InputConfiguration
-		{
-			HWND			hWnd;
-			HINSTANCE		hInst;
-			DWORD			keyboardCoopFlags;
-			DWORD			mouseCoopFlags;
-			unsigned int	nMaxJoysticks;
-		};
-
-	public:
 		DirectInput(Logger *pLogger);
 		~DirectInput();
 
 		DirectInput(const DirectInput &) = delete;
 		DirectInput& operator=(const DirectInput &) = delete;
 
-		bool Configure(InputConfiguration const &config);
 		//from subsystem
-		virtual bool Initialize();
+		virtual bool Initialize(SubsystemConfiguration const & config);
 		//from Subsystem
 		virtual bool IsInitialized() const { return m_bIsInitialized; }
 
@@ -160,8 +146,9 @@ namespace Accevo
 		bool IsJoyPOVDown(DWORD control);
 		bool IsOldJoyPOVDown(DWORD control);
 
+		//convenience method that can take a string value of the code control constants
+		//used in code, and parse them into the correct in-memory DWORD value
 		DWORD ParseControl(const char* control);
-
 
 	private:
 		char									*m_parsebuffer;
@@ -189,6 +176,7 @@ namespace Accevo
 		DIJOYSTATE2*			m_pOldJoystates;
 		JoystickInfo*			m_pJoystickInfo;
 
+		HWND					m_hwnd;		//need to hold onto for these following callbacks
 		friend BOOL CALLBACK EnumJoysticksCallbackCount(const DIDEVICEINSTANCE * pdidInstance, void * pContext);
 		friend BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE * pdidInstance, void * pContext);
 		friend BOOL CALLBACK EnumAxesCallback(LPCDIDEVICEOBJECTINSTANCE lpddoi, LPVOID pvRef);
@@ -201,7 +189,6 @@ namespace Accevo
 		Logger				*m_pLogger;
 		HRESULT				m_hr;
 		bool				m_bIsInitialized;
-		InputConfiguration	m_config;
 	};
 
 }	//namespace Accevo
@@ -244,6 +231,3 @@ namespace Accevo
 #define AEINPUT_GAMECTRL_GETPOV(x)			(x & 0x00000F00)
 
 #define KEYDOWN(keys, x)			( keys[x] & 0x80 )
-
-#endif // DIRECT_INPUT_H
-

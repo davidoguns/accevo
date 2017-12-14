@@ -241,6 +241,7 @@ namespace Accevo
 			s_resourceMiscFlags.Insert(SID("D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX"), D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX);
 			s_resourceMiscFlags.Insert(SID("D3D11_RESOURCE_MISC_GDI_COMPATIBLE"), D3D11_RESOURCE_MISC_GDI_COMPATIBLE);
 
+			/*
 			s_d3dxfilterFlags.Insert(SID("D3DX11_FILTER_NONE"), D3DX11_FILTER_NONE);
 			s_d3dxfilterFlags.Insert(SID("D3DX11_FILTER_POINT"), D3DX11_FILTER_POINT);
 			s_d3dxfilterFlags.Insert(SID("D3DX11_FILTER_LINEAR"), D3DX11_FILTER_LINEAR);
@@ -255,6 +256,7 @@ namespace Accevo
 			s_d3dxfilterFlags.Insert(SID("D3DX11_FILTER_SRGB_IN"), D3DX11_FILTER_SRGB_IN);
 			s_d3dxfilterFlags.Insert(SID("D3DX11_FILTER_SRGB_OUT"), D3DX11_FILTER_SRGB_OUT);
 			s_d3dxfilterFlags.Insert(SID("D3DX11_FILTER_SRGB"), D3DX11_FILTER_SRGB);
+			*/
 		}
 	}
 
@@ -905,6 +907,7 @@ namespace Accevo
 		return GetFlags<UINT>(stringFlags, flagsOut, s_cpuAccessFlags);
 	}
 
+	/*
 	bool DirectX11DataHelper::GetD3DX11FilterFlags(char const *stringFlags, UINT &flagsOut)
 	{
 		return GetFlags<UINT>(stringFlags, flagsOut, s_d3dxfilterFlags);
@@ -981,6 +984,6 @@ namespace Accevo
 
 		return fullyPopulated;
 	}
-
+	*/
 }
 

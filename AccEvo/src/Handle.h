@@ -5,8 +5,6 @@
 #ifndef _AEHANDLE_H_
 #define _AEHANDLE_H_
 
-#include <boost\noncopyable.hpp>
-
 namespace Accevo
 {
 	

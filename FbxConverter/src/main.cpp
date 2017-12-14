@@ -67,8 +67,7 @@ void PrintAttribute(FbxNodeAttribute* pAttribute) {
 
 /**
   * [1] -- FBX file to load
-  * [2] -- Name of mesh to export
-  * [3] -- Output path to write to
+  * [2] -- Output path to write to
   * 
   */
 int main(int argc, char ** argv)
@@ -78,14 +77,13 @@ int main(int argc, char ** argv)
 		cout << "arg[" << i << "]: " << argv[i] << endl;
 	}
 
-	if(argc < 3)
+	if(argc < 2)
 	{
 		cout << "Must specify at least FBX file, name of mesh, and output file path" << endl;
+		return -1;
 	}
 	string meshFileName(argv[1]);
 	string outputFileName(argv[2]);
-
-	
 
 	cout	<< "Opening FBX file for reading: " << meshFileName << endl
 			<< "Outputting result to AM file: " << outputFileName << endl;
@@ -323,8 +321,8 @@ void getMeshData(FbxManager *pFbxMgr, Mesh &mesh, FbxNode *node)
 		if(!pMesh->IsTriangleMesh())
 		{
 			FbxGeometryConverter fbxGc(pFbxMgr);
-			//pMesh = fbxGc.Triangulate(pMesh, true);	//could triangulate in place
-			fbxGc.Triangulate(pMesh, true);	//could triangulate in place
+			pMesh = (FbxMesh*)fbxGc.Triangulate(pMesh, true);	//could triangulate in place
+			//fbxGc.Triangulate(pMesh, true);	//could triangulate in place
 		}
 		
 		pMesh->GenerateNormals(true, true, false);	//compute normals
@@ -354,7 +352,6 @@ void getMeshData(FbxManager *pFbxMgr, Mesh &mesh, FbxNode *node)
 
 /*
  *	Multiply a position vector by an affine matrix
- *
  */
 FbxVector4 MultiplyMatrixCM(FbxAMatrix const &matrix, FbxVector4 const &vector)
 {
@@ -364,4 +361,3 @@ FbxVector4 MultiplyMatrixCM(FbxAMatrix const &matrix, FbxVector4 const &vector)
 		matrix.GetColumn(2).DotProduct(vector),
 		matrix.GetColumn(3).DotProduct(vector));
 }
-
