@@ -5,9 +5,9 @@
 #include "DXUtil.h"
 #include "VertexShader.h"
 #include "EngineKernel.h"
-#include <D3D10.h>
 #include <boost/shared_array.hpp>
 #include <boost/format.hpp>
+#include <D3D11.h>
 
 namespace Accevo
 {
@@ -20,16 +20,14 @@ VertexShader::VertexShader(ID3D11Device *pDevice, wchar_t const *filename) :
 	ID3D10Blob *vsBlob = nullptr;
 	ID3D10Blob *errorBlob = nullptr;
 
-	m_hr = D3DX11CompileFromFile(filename,
-		NULL, NULL,							//no macros, no includes
+	m_hr = D3DCompileFromFile(filename,
+		nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,							//no macros, no includes
 		"vs_main",							//name of shader entry point function
 		"vs_5_0",							//shader target version
-		D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG,		//disables old syntax
-		NULL,								//only used if this is an FX file
-		NULL,								//no thread pump - compile synchronously
+		0,								//only used if this is an FX file
+		0,								//no thread pump - compile synchronously
 		&vsBlob,
-		&errorBlob,
-		NULL);								//only needed if asynchronously called
+		&errorBlob);								//only needed if asynchronously called
 	AELOG_DXERR_CONDITIONAL_CODE_ERROR(ENGINE_LOGGER, L"Could not compile vertex shader from file!!!", m_hr,
 		if(errorBlob)
 		{
@@ -41,7 +39,7 @@ VertexShader::VertexShader(ID3D11Device *pDevice, wchar_t const *filename) :
 
 	m_hr = pDevice->CreateVertexShader(vsBlob->GetBufferPointer(),
 		vsBlob->GetBufferSize(),
-		NULL,		//no linking
+		nullptr,		//no linking
 		(ID3D11VertexShader**)&m_pShader);
 	AELOG_DXERR_CONDITIONAL_CODE_ERROR(ENGINE_LOGGER, L"Could not create vertex shader from blob!!!", m_hr,
 		return;

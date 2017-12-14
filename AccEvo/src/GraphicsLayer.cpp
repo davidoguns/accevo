@@ -2,7 +2,7 @@
 #include <iostream>
 #include "GraphicsLayer.h"
 #include <set>
-#include <xnamath.h>
+#include <DirectXMath.h>
 #include "DXUtil.h"
 
 #include <boost/shared_ptr.hpp>
@@ -26,7 +26,6 @@ namespace Accevo
 		m_depthStencilBuffer(nullptr),
 		m_pInfoQueue(nullptr),
 		m_pD3DDebug(nullptr),
-		m_imageLoadInfoMgr(m_pLogger),
 		m_graphicsResourceMgr(m_pLogger),
 		m_graphicsBundles(m_pLogger),
 		m_pRasterizerState(nullptr),
@@ -614,13 +613,13 @@ namespace Accevo
 
 	GraphicsResource * GraphicsLayer::LoadTexture(wchar_t const *filename)
 	{
+		/*
 		HRESULT hr;
 		boost::optional<D3DX11_IMAGE_LOAD_INFO &> imgLoadInfo;
 
 		Handle hImgLoad;	//TODO: change //imageLoadInfoMgr.GetHandle(HashString("defaultImageLoad"));
 		imgLoadInfo = m_imageLoadInfoMgr.GetDataOptional(hImgLoad);
 
-/*
 		imgLoadInfo->BindFlags = 0;
 		imgLoadInfo->CpuAccessFlags = D3DX11_DEFAULT;
 		imgLoadInfo->Depth = D3DX11_DEFAULT;
@@ -634,7 +633,6 @@ namespace Accevo
 		imgLoadInfo->pSrcInfo = nullptr;
 		imgLoadInfo->Usage = D3D11_USAGE_DEFAULT;
 		imgLoadInfo->Format = DXGI_FORMAT_UNKNOWN;
-*/
 		ID3D11Resource *pResource = nullptr;
 
 		hr = D3DX11CreateTextureFromFile(
@@ -643,5 +641,8 @@ namespace Accevo
 		return new GraphicsResource(m_pLogger, m_pDevice, pResource,
 			imgLoadInfo->BindFlags,
 			nullptr, nullptr, nullptr, nullptr);
+
+			*/
+		return nullptr;	//TODO!! how to load textures!
 	}
 }		//namespace Accevo

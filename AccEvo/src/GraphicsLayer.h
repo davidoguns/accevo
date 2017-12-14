@@ -6,7 +6,6 @@
 
 #include "GlobalInclude.h"
 #include <D3D11.h>
-#include <D3DX11.h>
 #include <boost/shared_array.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include "Subsystem.h"
@@ -174,7 +173,6 @@ namespace Accevo
 		ID3D11InfoQueue					*m_pInfoQueue;			//debugging info
 
 		HandleManager<GraphicsBundle>			m_graphicsBundles;
-		HandleManager<D3DX11_IMAGE_LOAD_INFO>	m_imageLoadInfoMgr;
 		HandleManager<GraphicsResource *>		m_graphicsResourceMgr;
 	};
 }	//namespace Accevo

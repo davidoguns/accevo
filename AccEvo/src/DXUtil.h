@@ -5,11 +5,15 @@
 #define _DXUTIL_H_
 
 #include "GlobalInclude.h"
-#include <D3DX11.h>
-#include <DxErr.h>
+#include <D3D11.h>
+#include <d3dcompiler.h>
 #include <sstream>
 #include "Logger.h"
 
+
+wchar_t const * DXGetErrorString(HRESULT const hr);
+
+wchar_t const * DXGetErrorDescription(HRESULT const hr);
 
 /***************************************************************
 	USAGE WARNING:

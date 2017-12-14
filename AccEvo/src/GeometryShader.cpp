@@ -5,7 +5,6 @@
 #include "dxutil.h"
 #include "GeometryShader.h"
 #include "EngineKernel.h"
-#include <D3DX11.h>
 #include <boost/format.hpp>
 
 using boost::wformat;
@@ -15,19 +14,17 @@ namespace Accevo
 
 GeometryShader::GeometryShader(ID3D11Device *pDevice, wchar_t const *filename)
 {
-	ID3D10Blob *gsBlob = nullptr;
-	ID3D10Blob *errorBlob = nullptr;
+	ID3DBlob *gsBlob = nullptr;
+	ID3DBlob *errorBlob = nullptr;
 
-	m_hr = D3DX11CompileFromFile(filename,
-		NULL, NULL,							//no macros, no includes
+	m_hr = D3DCompileFromFile(filename,
+		nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,					//no macros, no includes
 		"gs_main",							//name of shader entry point function
 		"gs_5_0",							//shader target version
-		D3D10_SHADER_ENABLE_STRICTNESS,		//disables old syntax
-		NULL,								//only used if this is an FX file
-		NULL,								//no thread pump - compile synchronously
+		0,									//only used if this is an FX file
+		0,									//no thread pump - compile synchronously
 		&gsBlob,
-		&errorBlob,
-		NULL);								//only needed if asynchronously called
+		&errorBlob);
 	AELOG_DXERR_CONDITIONAL_CODE_ERROR(ENGINE_LOGGER, L"Could not compile geometry shader from file!!!", m_hr,
 		if(errorBlob)
 		{

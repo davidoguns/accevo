@@ -16,7 +16,7 @@
 
 #include <accevo\FpsNotifierProcess.h>
 
-#include <xnamath.h>
+#include <DirectXMath.h>
 
 class ModelViewContext : public Accevo::KernelContext, public Accevo::FpsNotifierProcess::FpsListener
 {
@@ -53,16 +53,16 @@ protected:
 
 	Accevo::AFLOAT32					viewHeight;
 	Accevo::AFLOAT32					viewDistance;
-	XMFLOAT4X4							world;
+	DirectX::XMFLOAT4X4							world;
 	Accevo::AFLOAT32					rotation;
 };
 
 struct CB_Lights
 {
-	XMFLOAT4	ambient;
-	XMFLOAT4	pointPosition;
-	XMFLOAT4	pointColor;
-	XMFLOAT4	pointAttenuation;
+	DirectX::XMFLOAT4	ambient;
+	DirectX::XMFLOAT4	pointPosition;
+	DirectX::XMFLOAT4	pointColor;
+	DirectX::XMFLOAT4	pointAttenuation;
 };
 
 #endif

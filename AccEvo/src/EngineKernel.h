@@ -11,7 +11,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <vector>
-#include <boost\noncopyable.hpp>
 #include <iostream>
 
 #include "aetypes.h"
@@ -50,11 +49,14 @@ namespace Accevo
 		KernelContext			*pInitialContext;
 	};
 
-	class EngineKernel : boost::noncopyable
+	class EngineKernel
 	{
 	private:
 		EngineKernel(const EngineKernelConfiguration &kernelConfig);
 		~EngineKernel();
+
+		EngineKernel(const EngineKernel &) = delete;
+		EngineKernel & operator=(const EngineKernel &) = delete;
 
 		ABOOL IsReady() const {return m_bIsInitialized; }
 		void Shutdown();

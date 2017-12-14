@@ -127,7 +127,7 @@ ABOOL Shader::InitializeShaderResourceSlots(ID3D11ShaderReflection *pReflector)
 }
 
 //creates constant buffers using the reflection interface
-ABOOL Shader::CreateConstantBuffers(ID3D11Device *pDevice, ID3D10Blob *vsBlob, ID3D11ShaderReflection *pReflector)
+ABOOL Shader::CreateConstantBuffers(ID3D11Device *pDevice, ID3D10Blob *pBlob, ID3D11ShaderReflection *pReflector)
 {
 	m_pConstantBuffers = shared_array<ID3D11Buffer*>(
 		new ID3D11Buffer*[m_shaderDesc.ConstantBuffers]);
@@ -193,7 +193,7 @@ void Shader::SetConstantBufferData(ID3D11DeviceContext *pDeviceContext, ID3D11Bu
 
 //applies constant buffers to rendering pipeline
 void Shader::ApplyConstantBuffers(ID3D11DeviceContext *pDeviceContext, 
-		boost::function<void (ID3D11DeviceContext *, UINT, UINT, ID3D11Buffer *const *)> applyConstants)
+		std::function<void (ID3D11DeviceContext *, UINT, UINT, ID3D11Buffer *const *)> applyConstants)
 {
 	applyConstants(pDeviceContext, 0, m_shaderDesc.ConstantBuffers, m_pConstantBuffers.get());
 }
@@ -213,7 +213,7 @@ void Shader::SetShaderResourceByIndex(ID3D11DeviceContext *pDeviceContext,
 
 //applies shader resource to rendering pipeline at whatever stage is specified by function
 void Shader::ApplyShaderResources(ID3D11DeviceContext *pDeviceContext, 
-		boost::function<void (ID3D11DeviceContext *, UINT, UINT, ID3D11ShaderResourceView * const *)> applyShaderResources)
+	std::function<void (ID3D11DeviceContext *, UINT, UINT, ID3D11ShaderResourceView * const *)> applyShaderResources)
 {
 	applyShaderResources(pDeviceContext, 0, m_nShaderResourceViews, m_pShaderResourceViews.get());
 }
@@ -233,7 +233,7 @@ void Shader::SetSamplerStateByIndex(ID3D11DeviceContext *pDeviceContext,
 
 //applies sampler state to rendering pipeline at whatever stage is specified by function
 void Shader::ApplySamplerStates(ID3D11DeviceContext *pDeviceContext,
-	boost::function<void (ID3D11DeviceContext *, UINT, UINT, ID3D11SamplerState *const *)> applySamplerStates)
+	std::function<void (ID3D11DeviceContext *, UINT, UINT, ID3D11SamplerState *const *)> applySamplerStates)
 {
 	applySamplerStates(pDeviceContext, 0, m_nSamplerStates, m_pSamplerStates.get());
 }

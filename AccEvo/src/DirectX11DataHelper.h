@@ -6,12 +6,9 @@
 #define _DX11_DATA_HELPER_H_
 
 #include <D3D11.h>
-#include <D3DX11.h>
 #include <list>
 #include <boost/property_tree/ptree.hpp>
 #include "StringMap.h"
-
-
 
 namespace Accevo
 {
@@ -50,13 +47,12 @@ namespace Accevo
 		static bool GetInputLayoutDesc(boost::property_tree::ptree const &pt, D3D11_INPUT_ELEMENT_DESC *elements, unsigned int numElements);
 		static bool GetInputLayoutElementDesc(boost::property_tree::ptree const &pt, D3D11_INPUT_ELEMENT_DESC &ieDesc);
 		
-
-		static bool GetD3DXImageLoadInfo(boost::property_tree::ptree const &pt, D3DX11_IMAGE_LOAD_INFO &imgInfo);
+		//static bool GetD3DXImageLoadInfo(boost::property_tree::ptree const &pt, D3DX11_IMAGE_LOAD_INFO &imgInfo);
 		static bool GetD3D11Usage(char const *stringUsage, D3D11_USAGE &usage);
 		static bool GetD3D11Usage(StringIdentifier const &sid, D3D11_USAGE &usage);
 		static bool GetD3D11BindFlags(char const *flagsString, UINT &flagsOut);
 		static bool GetD3D11CpuAccessFlags(char const *stringFlags, UINT &flagsOut);
-		static bool GetD3DX11FilterFlags(char const *stringFlags, UINT &flagsOut);
+		//static bool GetD3DX11FilterFlags(char const *stringFlags, UINT &flagsOut);
 
 	protected:
 		template<class T>
