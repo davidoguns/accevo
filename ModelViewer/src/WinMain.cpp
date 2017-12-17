@@ -49,7 +49,7 @@ int CALLBACK WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	kc.windowWidth = 1920;
 	kc.windowHeight = 1080;
 	kc.windowTitle = L"Model Viewer";
-	kc.bFullscreen = true;
+	kc.bFullscreen = false;
 	kc.bVsync = false;
 	kc.programClock = &appClock;
 	kc.pInitialContext = new ModelViewContext(&logger);

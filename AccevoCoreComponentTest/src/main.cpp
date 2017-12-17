@@ -4,12 +4,12 @@
 
 #include <iostream>
 #include <fstream>
-#include <accevo\XmlStreamLogger.h>
-#include <accevo\DebugOutputLogger.h>
-#include <accevo\HandleManager.h>
-#include <accevo\StringIdentifier.h>
-#include <accevo\StringMap.h>
-#include <boost\format.hpp>
+#include <accevo/XmlStreamLogger.h>
+#include <accevo/DebugOutputLogger.h>
+#include <accevo/HandleManager.h>
+#include <accevo/StringIdentifier.h>
+#include <accevo/StringMap.h>
+#include <boost/format.hpp>
 #include <accevo/DirectX11DataHelper.h>
 
 #include <boost\property_tree\ptree.hpp>
@@ -23,7 +23,7 @@ using std::wofstream;
 using boost::format;
 
 using namespace Accevo;
-using boost::property_tree::read_xml;
+using boost::property_tree::xml_parser;
 using boost::property_tree::ptree;
 
 int main(int argc, char **argv)
