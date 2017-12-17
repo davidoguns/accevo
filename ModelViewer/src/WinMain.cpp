@@ -46,10 +46,10 @@ int CALLBACK WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	kc.nCmdShow = nCmdShow;
 
 	kc.pLogger = &logger;
-	kc.windowWidth = 1280;
-	kc.windowHeight = 720;
+	kc.windowWidth = 1920;
+	kc.windowHeight = 1080;
 	kc.windowTitle = L"Model Viewer";
-	kc.bFullscreen = false;
+	kc.bFullscreen = true;
 	kc.bVsync = false;
 	kc.programClock = &appClock;
 	kc.pInitialContext = new ModelViewContext(&logger);
@@ -67,4 +67,3 @@ int CALLBACK WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	delete kc.pInitialContext;
 	return ret;
 }
-
