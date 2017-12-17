@@ -352,7 +352,6 @@ void getMeshData(FbxManager *pFbxMgr, Mesh &mesh, FbxNode *node)
 
 /*
  *	Multiply a position vector by an affine matrix
- *
  */
 FbxVector4 MultiplyMatrixCM(FbxAMatrix const &matrix, FbxVector4 const &vector)
 {
