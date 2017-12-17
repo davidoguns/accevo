@@ -68,16 +68,16 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Users\ebonyseraph\source\lib\boost;C:\Users\ebonyseraph\source\repos\accevo\Release\include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <IncludePath>C:\Users\ebonyseraph\source\lib\boost;C:\Users\ebonyseraph\source\repos\accevo\Release\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\ebonyseraph\source\repos\accevo\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\ebonyseraph\source\lib\boost;C:\Users\david\source\repos\accevo\x64\Release\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\david\source\repos\accevo\x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\ebonyseraph\source\lib\boost;C:\Users\ebonyseraph\source\repos\accevo\Release\include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <IncludePath>C:\Users\ebonyseraph\source\lib\boost;C:\Users\ebonyseraph\source\repos\accevo\Release\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\ebonyseraph\source\repos\accevo\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\ebonyseraph\source\lib\boost;C:\Users\ebonyseraph\source\repos\accevo\x64\Release\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\ebonyseraph\source\repos\accevo\x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-     <ClCompile>
+    <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
