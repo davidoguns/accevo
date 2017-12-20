@@ -23,8 +23,8 @@ namespace Accevo
 			return m_map.find(key)->second;
 		}
 
-		//Gets the value with a specified key.  If no value
-		//exist, the behavior of this function is undefined.
+		//Gets the value with a specified key. If no value
+		//exiss, returns the passed in default value
 		T Get(Key const & key, T const & defValue) const
 		{
 			auto itemItr = m_map.find(key)->second;

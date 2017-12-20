@@ -1,8 +1,7 @@
 //David Oguns
 //February 1, 2011
 
-#ifndef _GRAPHICSRESOURCE_H_
-#define _GRAPHICSRESOURCE_H_
+#pragma once
 
 #include "GlobalInclude.h"
 #include <D3D11.h>
@@ -25,9 +24,12 @@ namespace Accevo
 		their cleanup upon destruction.
 	*************************************************************/
 
-	class GraphicsResource : public boost::noncopyable
+	class GraphicsResource
 	{
 	public:
+		GraphicsResource(GraphicsResource const &) = delete;
+		GraphicsResource& operator=(GraphicsResource const &) = delete;
+
 		GraphicsResource(ID3D11Device *pDevice,
 			ID3D11Resource *pResource,
 			UINT bindFlags,
@@ -74,6 +76,3 @@ namespace Accevo
 	};
 
 }	//namespace Accevo
-
-
-#endif

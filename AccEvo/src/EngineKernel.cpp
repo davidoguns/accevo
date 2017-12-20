@@ -278,7 +278,6 @@ namespace Accevo
 					//set next to null
 					m_pNextRunningContext = nullptr;
 				}
-
 				//time keeping
 				prevTimeStamp = currTimeStamp;
 			}

@@ -171,7 +171,8 @@ namespace Accevo
 		AELOG_TRACE(m_pLogger, L"Creating DirectX11 device and obtaining DXGI factory...");
 		//only request DirectX 11 or fail creation
 		D3D_FEATURE_LEVEL requestedLevels[] = {
-			D3D_FEATURE_LEVEL_11_0//,
+			//D3D_FEATURE_LEVEL_11_0,
+			D3D_FEATURE_LEVEL_11_1//,
 			//D3D_FEATURE_LEVEL_10_1,
 			//D3D_FEATURE_LEVEL_10_0,
 			//D3D_FEATURE_LEVEL_9_3,

@@ -1,15 +1,13 @@
 //David Oguns
 //December 26, 2010
 
-#ifndef _DXUTIL_H_
-#define _DXUTIL_H_
+#pragma once
 
 #include "GlobalInclude.h"
 #include <D3D11.h>
 #include <d3dcompiler.h>
 #include <sstream>
 #include "Logger.h"
-
 
 wchar_t const * DXGetErrorString(HRESULT const hr);
 
@@ -47,8 +45,6 @@ wchar_t const * DXGetErrorDescription(HRESULT const hr);
 	#define DX_SET_DEBUG_NAME(pObj, name)
 #endif
 
-
-
 /*****************************************************************
 	The following macros are used to log the description of return
 	values from DirectX function calls.  It is assumed the HRESULT
@@ -63,7 +59,6 @@ wchar_t const * DXGetErrorDescription(HRESULT const hr);
 	function calls that fail.
 *************************************************************/
 
-
 #if(!defined(AE_LOG_OUTPUT_LEVEL) || (AE_LOG_OUTPUT_LEVEL >= AE_LOG_OUTPUT_TRACE))
 	#define AELOG_DXERR_TRACE(pLogger, wstr_msg, hr)			\
 	{															\
@@ -72,8 +67,8 @@ wchar_t const * DXGetErrorDescription(HRESULT const hr);
 			<< L"\t DX Error String: "<< DXGetErrorString(hr)	\
 			<<  std::endl										\
 			<< L"\t DX Error Description: "						\
-			<< DXGetErrorDescription(hr);					\
-		AELOG_TRACE(pLogger, out.str().c_str());						\
+			<< DXGetErrorDescription(hr);						\
+		AELOG_TRACE(pLogger, out.str().c_str());					\
 	}
 	#define AELOG_DXERR_CONDITIONAL_TRACE(pLogger, wstr_msg, hr)	\
 	{																\
@@ -320,5 +315,5 @@ struct lessThanStr
 //standard procedure for releasing COM interface pointers
 #define DX_RELEASE(x) { if(x){ x->Release();x = nullptr; } }
 
-#endif
+
 
