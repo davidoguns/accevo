@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <dxgicommon.h>
+#include <dxgi1_6.h>
 #include "KernelContext.h"
 
 /************************************************************************
@@ -12,7 +12,6 @@
  *
  */
 
-enum DXGI_FORMAT;
 namespace Accevo
 {
 	AUINT32 const AE_SUBSYSTEM_GRAPHICS = 1 << 0;

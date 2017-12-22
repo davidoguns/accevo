@@ -1,11 +1,13 @@
 //David Oguns
 //December 26, 2010
 
-#ifndef _GRAPHICSLAYER_H_
-#define _GRAPHICSLAYER_H_
+#pragma once
 
 #include "GlobalInclude.h"
-#include <D3D11.h>
+#include <d3d11_4.h>
+#include <d2d1_3.h>
+#include <d2d1_3helper.h>
+#include <dwrite_3.h>
 #include <boost/shared_array.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include "Subsystem.h"
@@ -131,7 +133,7 @@ namespace Accevo
 		bool GetBackBufferGraphicsSurface();
 		bool CreateDepthStencilSurface();
 		bool SetupViewport();
-		bool SetRasterizerState();
+		//bool SetRasterizerState();
 
 		void ProcessMessageQueue();
 
@@ -143,20 +145,28 @@ namespace Accevo
 
 		ID3D11Device					*m_pDevice;						//pointer to device
 		ID3D11DeviceContext				*m_pImmediateDeviceContext;		//pointer to immediate device context
-		IDXGIFactory1					*m_pDXGIFactory;				//factory to obtain graphics device layers
+		IDXGIFactory4					*m_pDXGIFactory;				//factory to obtain graphics device layers
 		IDXGISwapChain					*m_pSwapChain;					//pointer to swap chain to present to screen
 		GraphicsResource				*m_backBuffer;					//back buffer surface
 		GraphicsResource				*m_depthStencilBuffer;			//depth stencil buffer
 		ID3D11RasterizerState			*m_pRasterizerState;
 		ID3D11DepthStencilState			*m_pDepthStencilState;
-		
-		GraphicsConfiguration			m_graphicsConfig;				//acheived configuration
+
+		GraphicsConfiguration			m_graphicsConfig;		//acheived configuration
 		ID3D11Debug						*m_pD3DDebug;			//debugging info
 		ID3D11InfoQueue					*m_pInfoQueue;			//debugging info
+
+		ID2D1Factory4					*m_pd2dFactory;			//factory
+		IDXGISurface					*m_pDxgiBackBufferSurface;
+		ID2D1RenderTarget				*m_pd2dRenderTarget;
+		ID2D1Device						*m_pd2dDevice;
+		ID2D1DeviceContext				*m_pd2dDeviceContext;
+		ID2D1SolidColorBrush			*m_pSolidBlueBrush;
+
+		IDXGIDevice						*m_pDXGIDevice;
+		IDXGIAdapter4					*m_pDXGIAdapter;
 
 		HandleManager<GraphicsBundle>			m_graphicsBundles;
 		HandleManager<GraphicsResource *>		m_graphicsResourceMgr;
 	};
 }	//namespace Accevo
-
-#endif

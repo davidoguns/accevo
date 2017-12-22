@@ -14,7 +14,7 @@ using namespace boost::property_tree;
 
 namespace Accevo
 {
-	GraphicsLayer::GraphicsLayer(Logger *pLogger) : 
+	GraphicsLayer::GraphicsLayer(Logger *pLogger) :
 		m_pLogger(pLogger),
 		m_pDevice(nullptr),
 		m_pImmediateDeviceContext(nullptr),
@@ -29,7 +29,14 @@ namespace Accevo
 		m_graphicsResourceMgr(m_pLogger),
 		m_graphicsBundles(m_pLogger),
 		m_pRasterizerState(nullptr),
-		m_pDepthStencilState(nullptr)
+		m_pDepthStencilState(nullptr),
+		m_pDxgiBackBufferSurface(nullptr),
+		m_pd2dFactory(nullptr),
+		m_pd2dDevice(nullptr),
+		m_pDXGIDevice(nullptr),
+		m_pDXGIAdapter(nullptr),
+		m_pd2dDeviceContext(nullptr),
+		m_pSolidBlueBrush(nullptr)
 	{
 		
 	}
@@ -159,7 +166,7 @@ namespace Accevo
 		AELOG_TRACE(m_pLogger, L"Creating DirectX11 device and obtaining DXGI factory...");
 		//only request DirectX 11 or fail creation
 		D3D_FEATURE_LEVEL requestedLevels[] = {
-			D3D_FEATURE_LEVEL_11_0
+			D3D_FEATURE_LEVEL_11_1
 			//D3D_FEATURE_LEVEL_10_1,
 			//D3D_FEATURE_LEVEL_10_0,
 			//D3D_FEATURE_LEVEL_9_3,
@@ -168,6 +175,7 @@ namespace Accevo
 		};
 
 		UINT d3dFlags = 0;
+		d3dFlags |= D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 	#ifdef _DEBUG
 		d3dFlags |= D3D11_CREATE_DEVICE_DEBUG;
 	#endif
@@ -187,10 +195,11 @@ namespace Accevo
 			&m_pImmediateDeviceContext);
 		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not create DirectX11 device!!!", hr, return false);
 	
+
 		IDXGIDevice * pDXGIDevice;
 		hr = m_pDevice->QueryInterface(__uuidof(IDXGIDevice), (void **)&pDXGIDevice);
 		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get DXGI device from D3D11 device!!!", hr, return false);
-      
+
 		IDXGIAdapter1 * pDXGIAdapter;
 		hr = pDXGIDevice->GetParent(__uuidof(IDXGIAdapter1), (void **)&pDXGIAdapter);
 		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get DXGI adapter from DXGI device!!!", hr, return false);
@@ -198,8 +207,21 @@ namespace Accevo
 		hr = pDXGIAdapter->GetParent(__uuidof(IDXGIFactory1), (void **)&m_pDXGIFactory);
 		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get DXGI factory from DXGI adapter!!!", hr, return false);
 
-		pDXGIDevice->Release();
-		pDXGIAdapter->Release();
+		D2D1_FACTORY_OPTIONS d2dFactoryOpts;
+		d2dFactoryOpts.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
+		hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(ID2D1Factory6), &d2dFactoryOpts, (void **)&m_pd2dFactory);
+		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not create D2D factory", hr, return false);
+
+		/*
+		hr = m_pDevice->QueryInterface(__uuidof(IDXGIDevice4), (void **)&m_pDXGIDevice);
+		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get DXGI device from D3D11 device!!!", hr, return false);
+
+		hr = m_pDXGIDevice->GetParent(__uuidof(IDXGIAdapter4), (void **)&m_pDXGIAdapter);
+		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get DXGI adapter from DXGI device!!!", hr, return false);
+
+		hr = m_pDXGIDevice->GetParent(__uuidof(IDXGIFactory4), (void **)&m_pDXGIFactory);
+		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get DXGI factory from DXGI adapter!!!", hr, return false);
+		*/
 
 		//get extra interfaces to get information
 		m_pDevice->QueryInterface(__uuidof(ID3D11Debug), (void **)&m_pD3DDebug);
@@ -337,7 +359,27 @@ namespace Accevo
 		//now get the pointer to the back buffer and create render target view from it
 		hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void **)&pBackBufferTexture);
 		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get back buffer texture!!!", hr, return false);
-	
+
+		//now get the pointer to the back buffer and create IDXGISurface to it
+		hr = m_pSwapChain->GetBuffer(0, __uuidof(IDXGISurface), (void **)&m_pDxgiBackBufferSurface);
+		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get back buffer DXGI surface!!!", hr, return false);
+
+		D2D1_RENDER_TARGET_PROPERTIES rtp;
+		memset(&rtp, 0, sizeof(D2D1_RENDER_TARGET_PROPERTIES));
+		m_pd2dFactory->GetDesktopDpi(&rtp.dpiX, &rtp.dpiY);
+		rtp.type = D2D1_RENDER_TARGET_TYPE_DEFAULT;
+		rtp.pixelFormat.format = m_graphicsConfig.mode.Format;
+		rtp.pixelFormat.alphaMode = D2D1_ALPHA_MODE_IGNORE;
+		hr = m_pd2dFactory->CreateDxgiSurfaceRenderTarget(m_pDxgiBackBufferSurface, rtp, &m_pd2dRenderTarget);
+		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get back buffer D2D render target!!!", hr, return false);
+
+		m_pd2dRenderTarget->CreateSolidColorBrush(D2D1::ColorF(0.f, 0.f, 1.f), &m_pSolidBlueBrush);
+
+		//doesnt release
+		hr = m_pd2dRenderTarget->QueryInterface(__uuidof(ID2D1DeviceContext), (void **)&m_pd2dDeviceContext);
+		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not acquire D2D1 device context", hr, return false);
+		
+
 		m_backBuffer = new GraphicsResource(m_pLogger, m_pDevice, pBackBufferTexture, 
 			D3D11_BIND_RENDER_TARGET,
 			nullptr, nullptr, nullptr, nullptr);
@@ -444,6 +486,14 @@ namespace Accevo
 
 	void GraphicsLayer::Present()
 	{
+		m_pd2dRenderTarget->BeginDraw();
+
+		m_pd2dRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+		m_pd2dRenderTarget->DrawLine(D2D1::Point2F(10.f, 10.f), D2D1::Point2F(1910.f, 1070.f), 
+			m_pSolidBlueBrush, 1.f, nullptr);
+
+		m_pd2dRenderTarget->EndDraw();
+
 		m_pSwapChain->Present(m_graphicsConfig.bVSync? 1 : 0, 0);
 	}
 
@@ -487,6 +537,7 @@ namespace Accevo
 			delete m_backBuffer;
 			m_backBuffer = nullptr;
 		}
+		DX_RELEASE(m_pDxgiBackBufferSurface);
 		DX_RELEASE(m_pDepthStencilState);
 		if(m_depthStencilBuffer)
 		{
@@ -527,7 +578,7 @@ namespace Accevo
 			for(unsigned __int64 msgIndex = 0; msgIndex < nMsg; ++msgIndex)
 			{	
 				msgLength = 0;
-				m_pInfoQueue->GetMessage(msgIndex, NULL, &msgLength);
+				m_pInfoQueue->GetMessage(msgIndex, 0, &msgLength);
 				boost::shared_array<char> msgMemory(new char[msgLength]);
 				msg = (D3D11_MESSAGE *)msgMemory.get();
 				m_pInfoQueue->GetMessage(msgIndex, msg, &msgLength);
@@ -553,7 +604,7 @@ namespace Accevo
 			if(isFullscreen)
 			{
 				AELOG_TRACE(m_pLogger, "Application found in fullscreen, setting back to windowed.");
-				hr = m_pSwapChain->SetFullscreenState(FALSE, NULL);
+				hr = m_pSwapChain->SetFullscreenState(FALSE, nullptr);
 				AELOG_DXERR_DEBUG(m_pLogger, "Switch to windowed mode: ", hr);
 				pOutput->Release();
 			}
@@ -578,7 +629,11 @@ namespace Accevo
 		DX_RELEASE(m_pRasterizerState);
 
 		ReleaseSwapChainAndMainBuffers();
-			
+
+		DX_RELEASE(m_pSolidBlueBrush);
+		DX_RELEASE(m_pd2dRenderTarget);
+		DX_RELEASE(m_pd2dDeviceContext);
+		DX_RELEASE(m_pd2dFactory);
 		DX_RELEASE(m_pDXGIFactory);
 
 		if(m_pInfoQueue)
@@ -592,6 +647,9 @@ namespace Accevo
 		{
 			m_pImmediateDeviceContext->ClearState();
 		}
+		DX_RELEASE(m_pDXGIAdapter);
+		DX_RELEASE(m_pDXGIDevice);
+
 		DX_RELEASE(m_pImmediateDeviceContext);
 		DX_RELEASE(m_pDevice);
 
