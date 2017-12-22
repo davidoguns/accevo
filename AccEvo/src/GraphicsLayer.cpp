@@ -31,12 +31,14 @@ namespace Accevo
 		m_pRasterizerState(nullptr),
 		m_pDepthStencilState(nullptr),
 		m_pDxgiBackBufferSurface(nullptr),
-		m_pd2dFactory(nullptr),
+		m_pD2dFactory(nullptr),
 		m_pd2dDevice(nullptr),
 		m_pDXGIDevice(nullptr),
 		m_pDXGIAdapter(nullptr),
-		m_pd2dDeviceContext(nullptr),
-		m_pSolidBlueBrush(nullptr)
+		m_pD2dDeviceContext(nullptr),
+		m_pSolidBlueBrush(nullptr),
+		m_pDWriteFactory(nullptr),
+		m_pDWriteLayout(nullptr)
 	{
 		
 	}
@@ -166,7 +168,7 @@ namespace Accevo
 		AELOG_TRACE(m_pLogger, L"Creating DirectX11 device and obtaining DXGI factory...");
 		//only request DirectX 11 or fail creation
 		D3D_FEATURE_LEVEL requestedLevels[] = {
-			D3D_FEATURE_LEVEL_11_1
+			D3D_FEATURE_LEVEL_11_0
 			//D3D_FEATURE_LEVEL_10_1,
 			//D3D_FEATURE_LEVEL_10_0,
 			//D3D_FEATURE_LEVEL_9_3,
@@ -204,13 +206,22 @@ namespace Accevo
 		hr = pDXGIDevice->GetParent(__uuidof(IDXGIAdapter1), (void **)&pDXGIAdapter);
 		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get DXGI adapter from DXGI device!!!", hr, return false);
 
-		hr = pDXGIAdapter->GetParent(__uuidof(IDXGIFactory1), (void **)&m_pDXGIFactory);
+		hr = pDXGIAdapter->GetParent(__uuidof(IDXGIFactory1), reinterpret_cast<void **>(&m_pDXGIFactory));
 		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get DXGI factory from DXGI adapter!!!", hr, return false);
 
 		D2D1_FACTORY_OPTIONS d2dFactoryOpts;
 		d2dFactoryOpts.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
-		hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(ID2D1Factory6), &d2dFactoryOpts, (void **)&m_pd2dFactory);
+		hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(ID2D1Factory6), &d2dFactoryOpts, (void **)&m_pD2dFactory);
 		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not create D2D factory", hr, return false);
+
+		hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_ISOLATED, __uuidof(IDWriteFactory5), reinterpret_cast<IUnknown **>(&m_pDWriteFactory));
+		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not create DirectWrite factory", hr, return false);
+
+		hr = m_pDWriteFactory->CreateTextFormat(
+			L"Gabriola", nullptr, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL,
+			DWRITE_FONT_STRETCH_NORMAL, 72.0f, L"en-us", reinterpret_cast<IDWriteTextFormat**>(&m_pDWriteFormat));
+		//hr = m_pDWriteFactory->CreateTextLayout(L"Hello Direct2D World!!!", wcslen(L"Hello Direct2D World!!!"),
+		//	&m_pDWriteFormat, )
 
 		/*
 		hr = m_pDevice->QueryInterface(__uuidof(IDXGIDevice4), (void **)&m_pDXGIDevice);
@@ -366,17 +377,18 @@ namespace Accevo
 
 		D2D1_RENDER_TARGET_PROPERTIES rtp;
 		memset(&rtp, 0, sizeof(D2D1_RENDER_TARGET_PROPERTIES));
-		m_pd2dFactory->GetDesktopDpi(&rtp.dpiX, &rtp.dpiY);
+		m_pD2dFactory->GetDesktopDpi(&rtp.dpiX, &rtp.dpiY);
 		rtp.type = D2D1_RENDER_TARGET_TYPE_DEFAULT;
 		rtp.pixelFormat.format = m_graphicsConfig.mode.Format;
 		rtp.pixelFormat.alphaMode = D2D1_ALPHA_MODE_IGNORE;
-		hr = m_pd2dFactory->CreateDxgiSurfaceRenderTarget(m_pDxgiBackBufferSurface, rtp, &m_pd2dRenderTarget);
+		hr = m_pD2dFactory->CreateDxgiSurfaceRenderTarget(m_pDxgiBackBufferSurface, rtp, &m_pD2dRenderTarget);
 		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get back buffer D2D render target!!!", hr, return false);
 
-		m_pd2dRenderTarget->CreateSolidColorBrush(D2D1::ColorF(0.f, 0.f, 1.f), &m_pSolidBlueBrush);
+		m_pD2dRenderTarget->CreateSolidColorBrush(D2D1::ColorF(0.f, 0.f, 1.f), &m_pSolidBlueBrush);
+		m_pD2dRenderTarget->CreateSolidColorBrush(D2D1::ColorF(0.f, 1.f, 1.f), &m_pSolidYellowBrush);
 
 		//doesnt release
-		hr = m_pd2dRenderTarget->QueryInterface(__uuidof(ID2D1DeviceContext), (void **)&m_pd2dDeviceContext);
+		hr = m_pD2dRenderTarget->QueryInterface(__uuidof(ID2D1DeviceContext), (void **)&m_pD2dDeviceContext);
 		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not acquire D2D1 device context", hr, return false);
 		
 
@@ -486,13 +498,17 @@ namespace Accevo
 
 	void GraphicsLayer::Present()
 	{
-		m_pd2dRenderTarget->BeginDraw();
+		m_pD2dRenderTarget->BeginDraw();
 
-		m_pd2dRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-		m_pd2dRenderTarget->DrawLine(D2D1::Point2F(10.f, 10.f), D2D1::Point2F(1910.f, 1070.f), 
-			m_pSolidBlueBrush, 1.f, nullptr);
+		m_pD2dRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+		m_pD2dRenderTarget->DrawLine(D2D1::Point2F(10.f, 10.f), D2D1::Point2F(1910.f, 1070.f), 
+			m_pSolidBlueBrush, 4.f, nullptr);
 
-		m_pd2dRenderTarget->EndDraw();
+		m_pD2dRenderTarget->DrawTextW(L"Hello Direct2D World!", wcslen(L"Hello Direct2D World!"),
+			m_pDWriteFormat, D2D1::RectF(1650.f, 10.f, 1910.f, 60.f),
+			m_pSolidYellowBrush, D2D1_DRAW_TEXT_OPTIONS_NONE);
+
+		m_pD2dRenderTarget->EndDraw();
 
 		m_pSwapChain->Present(m_graphicsConfig.bVSync? 1 : 0, 0);
 	}
@@ -630,10 +646,12 @@ namespace Accevo
 
 		ReleaseSwapChainAndMainBuffers();
 
+		DX_RELEASE(m_pDWriteFormat);
+		DX_RELEASE(m_pSolidYellowBrush);
 		DX_RELEASE(m_pSolidBlueBrush);
-		DX_RELEASE(m_pd2dRenderTarget);
-		DX_RELEASE(m_pd2dDeviceContext);
-		DX_RELEASE(m_pd2dFactory);
+		DX_RELEASE(m_pD2dRenderTarget);
+		DX_RELEASE(m_pD2dDeviceContext);
+		DX_RELEASE(m_pD2dFactory);
 		DX_RELEASE(m_pDXGIFactory);
 
 		if(m_pInfoQueue)

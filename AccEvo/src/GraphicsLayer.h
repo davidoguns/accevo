@@ -156,15 +156,20 @@ namespace Accevo
 		ID3D11Debug						*m_pD3DDebug;			//debugging info
 		ID3D11InfoQueue					*m_pInfoQueue;			//debugging info
 
-		ID2D1Factory4					*m_pd2dFactory;			//factory
+		ID2D1Factory4					*m_pD2dFactory;			//factory
 		IDXGISurface					*m_pDxgiBackBufferSurface;
-		ID2D1RenderTarget				*m_pd2dRenderTarget;
+		ID2D1RenderTarget				*m_pD2dRenderTarget{nullptr};
 		ID2D1Device						*m_pd2dDevice;
-		ID2D1DeviceContext				*m_pd2dDeviceContext;
+		ID2D1DeviceContext				*m_pD2dDeviceContext;
 		ID2D1SolidColorBrush			*m_pSolidBlueBrush;
+		ID2D1SolidColorBrush			*m_pSolidYellowBrush{ nullptr };
 
-		IDXGIDevice						*m_pDXGIDevice;
-		IDXGIAdapter4					*m_pDXGIAdapter;
+		IDXGIDevice						*m_pDXGIDevice{ nullptr };
+		IDXGIAdapter4					*m_pDXGIAdapter{ nullptr };
+
+		IDWriteFactory5					*m_pDWriteFactory{ nullptr };
+		IDWriteTextLayout4				*m_pDWriteLayout{ nullptr };
+		IDWriteTextFormat3				*m_pDWriteFormat{ nullptr };
 
 		HandleManager<GraphicsBundle>			m_graphicsBundles;
 		HandleManager<GraphicsResource *>		m_graphicsResourceMgr;
