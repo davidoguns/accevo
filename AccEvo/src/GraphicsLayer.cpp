@@ -11,6 +11,7 @@
 #define AE_LOG_OUTPUT_LEVEL AE_LOG_OUTPUT_TRACE
 
 using namespace boost::property_tree;
+using boost::wformat;
 
 namespace Accevo
 {
@@ -100,7 +101,7 @@ namespace Accevo
 		D3D11_RASTERIZER_DESC rDesc;
 		ZeroMemory(&rDesc, sizeof(D3D11_RASTERIZER_DESC));
 		rDesc.AntialiasedLineEnable = false;
-		rDesc.CullMode = D3D11_CULL_NONE;
+		rDesc.CullMode = D3D11_CULL_BACK;
 		rDesc.DepthBias = 0;
 		rDesc.DepthBiasClamp = 0.0f;
 		rDesc.DepthClipEnable = false;
@@ -218,21 +219,8 @@ namespace Accevo
 		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not create DirectWrite factory", hr, return false);
 
 		hr = m_pDWriteFactory->CreateTextFormat(
-			L"Gabriola", nullptr, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL,
-			DWRITE_FONT_STRETCH_NORMAL, 72.0f, L"en-us", reinterpret_cast<IDWriteTextFormat**>(&m_pDWriteFormat));
-		//hr = m_pDWriteFactory->CreateTextLayout(L"Hello Direct2D World!!!", wcslen(L"Hello Direct2D World!!!"),
-		//	&m_pDWriteFormat, )
-
-		/*
-		hr = m_pDevice->QueryInterface(__uuidof(IDXGIDevice4), (void **)&m_pDXGIDevice);
-		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get DXGI device from D3D11 device!!!", hr, return false);
-
-		hr = m_pDXGIDevice->GetParent(__uuidof(IDXGIAdapter4), (void **)&m_pDXGIAdapter);
-		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get DXGI adapter from DXGI device!!!", hr, return false);
-
-		hr = m_pDXGIDevice->GetParent(__uuidof(IDXGIFactory4), (void **)&m_pDXGIFactory);
-		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not get DXGI factory from DXGI adapter!!!", hr, return false);
-		*/
+			L"Comic Sans MS", nullptr, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL,
+			DWRITE_FONT_STRETCH_NORMAL, 36.0f, L"en-us", reinterpret_cast<IDWriteTextFormat**>(&m_pDWriteFormat));
 
 		//get extra interfaces to get information
 		m_pDevice->QueryInterface(__uuidof(ID3D11Debug), (void **)&m_pD3DDebug);
@@ -496,8 +484,24 @@ namespace Accevo
 			1.0f, 0);
 	}
 
+	void GraphicsLayer::DrawFps(AFLOAT32 fps)
+	{
+		m_pD2dRenderTarget->BeginDraw();
+
+		m_pD2dRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+
+		std::wstring fpsString = (wformat(L"%1%") % fps).str();
+
+		m_pD2dRenderTarget->DrawTextW(fpsString.c_str(), fpsString.length(),
+			m_pDWriteFormat, D2D1::RectF(1750.f, 10.f, 1910.f, 60.f),
+			m_pSolidYellowBrush, D2D1_DRAW_TEXT_OPTIONS_NONE);
+
+		m_pD2dRenderTarget->EndDraw();
+	}
+
 	void GraphicsLayer::Present()
 	{
+		/*
 		m_pD2dRenderTarget->BeginDraw();
 
 		m_pD2dRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
@@ -509,7 +513,7 @@ namespace Accevo
 			m_pSolidYellowBrush, D2D1_DRAW_TEXT_OPTIONS_NONE);
 
 		m_pD2dRenderTarget->EndDraw();
-
+		*/
 		m_pSwapChain->Present(m_graphicsConfig.bVSync? 1 : 0, 0);
 	}
 
@@ -707,6 +711,8 @@ namespace Accevo
 			nullptr, nullptr, nullptr, nullptr);
 
 			*/
+
+
 		return nullptr;	//TODO!! how to load textures!
 	}
 }		//namespace Accevo

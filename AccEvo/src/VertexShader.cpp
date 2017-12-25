@@ -72,7 +72,7 @@ VertexShader::~VertexShader()
 	DX_RELEASE(m_pInputLayout);
 }
 
-bool VertexShader::CreateInputLayout(ID3D11Device *pDevice, ID3D10Blob *vsBlob, ID3D11ShaderReflection *pReflector)
+bool VertexShader::CreateInputLayout(ID3D11Device *pDevice, ID3DBlob *vsBlob, ID3D11ShaderReflection *pReflector)
 {
 	shared_array<D3D11_SIGNATURE_PARAMETER_DESC> vSPDesc(
 		new D3D11_SIGNATURE_PARAMETER_DESC[m_shaderDesc.InputParameters]);

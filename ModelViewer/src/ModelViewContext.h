@@ -55,6 +55,7 @@ protected:
 	Accevo::AFLOAT32					viewDistance;
 	DirectX::XMFLOAT4X4							world;
 	Accevo::AFLOAT32					rotation;
+	Accevo::AFLOAT32					m_fps{ 0.f };
 };
 
 struct CB_Lights

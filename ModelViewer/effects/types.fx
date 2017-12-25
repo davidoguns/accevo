@@ -1,8 +1,6 @@
 #ifndef _FXTYPES_FX
 #define _FXTYPES_FX
 
-
-
 //Not all of the following types are used in all shaders
 
 struct PS_OUTPUT
@@ -13,6 +11,7 @@ struct PS_OUTPUT
 struct VS_INPUT
 {
 	float4 pos : SV_POSITION0;
+	float4 uv  : TEXCOORD0;
 	float4 normal : NORMAL;
 };
 

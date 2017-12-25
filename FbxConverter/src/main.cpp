@@ -18,7 +18,8 @@ int numTabs = 0;
 /**
  * Print the required number of tabs.
  */
-void PrintTabs() {
+void PrintTabs()
+{
     for(int i = 0; i < numTabs; i++)
         printf("\t");
 }
@@ -26,7 +27,8 @@ void PrintTabs() {
 /**
  * Return a string-based representation based on the attribute type.
  */
-FbxString GetAttributeTypeName(FbxNodeAttribute::EType type) {
+FbxString GetAttributeTypeName(FbxNodeAttribute::EType type)
+{
     switch(type) {
         case FbxNodeAttribute::eUnknown: return "unidentified";
         case FbxNodeAttribute::eNull: return "null";
@@ -55,7 +57,8 @@ FbxString GetAttributeTypeName(FbxNodeAttribute::EType type) {
 /**
  * Print an attribute.
  */
-void PrintAttribute(FbxNodeAttribute* pAttribute) {
+void PrintAttribute(FbxNodeAttribute* pAttribute)
+{
     if(!pAttribute) return;
  
     FbxString typeName = GetAttributeTypeName(pAttribute->GetAttributeType());
@@ -129,6 +132,7 @@ int main(int argc, char ** argv)
 	}
 	of.close();	//close before exiting
 	cout << std::flush;
+
 	return 0;
 }
 
@@ -136,6 +140,7 @@ void writeAccevoMesh(std::ofstream &of, Mesh const &mesh)
 {
 	cout << "Writing " << mesh.indices.size() << " control points and " << mesh.nPolygons << " polygons to file." << endl;
 	std::list<FbxVector4>::const_iterator vItr = mesh.vertices.cbegin();
+	std::list<FbxVector2>::const_iterator uvItr = mesh.uv.cbegin();
 	std::list<FbxVector4>::const_iterator nItr = mesh.normals.cbegin();
 
 	unsigned _int32 num = static_cast<unsigned _int32>(mesh.vertices.size());
@@ -151,6 +156,7 @@ void writeAccevoMesh(std::ofstream &of, Mesh const &mesh)
 	float minY(std::numeric_limits<float>::max());
 	float minZ(std::numeric_limits<float>::max());
 
+	static int const vertexSizeNumFloats = 12;
 	//write vertices with normals
 	while(vItr != mesh.vertices.cend())
 	{
@@ -162,20 +168,24 @@ void writeAccevoMesh(std::ofstream &of, Mesh const &mesh)
 		minY = std::min<float>(minY, static_cast<float>(vItr->mData[1]));
 		minZ = std::min<float>(minZ, static_cast<float>(vItr->mData[2]));
 
-		float v[8] =
+		float v[vertexSizeNumFloats] =
 		{
 			static_cast<float>(vItr->mData[0]),
 			static_cast<float>(vItr->mData[1]),
 			static_cast<float>(vItr->mData[2]),
-			static_cast<float>(1.0f),
+			1.0f,
+			static_cast<float>(uvItr->mData[0]),
+			static_cast<float>(uvItr->mData[1]),
+			0.0f,
+			0.0f,
 			static_cast<float>(nItr->mData[0]),
 			static_cast<float>(nItr->mData[1]),
 			static_cast<float>(nItr->mData[2]),
-			static_cast<float>(0.0f)
+			0.0f
 		};
-		of.write((char const *)v, sizeof(float)*8);
+		of.write((char const *)v, sizeof(float)*vertexSizeNumFloats);
 
-		++vItr; ++nItr;	;	//iterating over three structures at the same time
+		++vItr; ++nItr;	++uvItr;	//iterating over three structures at the same time
 	}
 	//write indices
 	for(std::list<unsigned _int32>::const_iterator iItr = mesh.indices.cbegin();
@@ -192,55 +202,6 @@ void writeAccevoMesh(std::ofstream &of, Mesh const &mesh)
 	sprintf_s<1024>(buffer, "Min(%f,%f,%f) : Max(%f,%f,%f)",
 			minX, minY, minZ, maxX, maxY, maxZ);
 	cout << "Done writing vertices.  " << buffer << endl;
-}
-
-/**
-  * Writes mesh out to stream in binary
-  */
-void writeAccevoMesh(ofstream &of, FbxMesh *pMesh)
-{
-	unsigned _int32 vCount = pMesh->GetControlPointsCount();	//number of unique vertex
-	unsigned _int32 iCount = pMesh->mPolygonVertices.Size();	//number of indices
-	unsigned _int32 pCount = iCount / 3;		//if we are dealing with triangles...
-
-	FbxLayerElementArrayTemplate<FbxVector4> *normals = nullptr;	//create place to hold normals
-	pMesh->GetNormals(&normals);	//write normals here
-
-	cout << "Number of vertices: " << vCount << endl;
-	cout << "Number of indices: " << iCount << endl;
-	cout << "Number of normals: " << normals->GetCount() << endl;
-	
-	//write counts first, will allow straight read
-	//can't use static casts here
-	of.write((char *)&vCount, sizeof(unsigned _int32));
-	of.write((char *)&iCount, sizeof(unsigned _int32));
-	of.write((char *)&pCount, sizeof(unsigned _int32));
-	//iterate over all of the vertices
-	for(unsigned _int32 vIndex = 0; vIndex < vCount; ++vIndex)
-	{
-		FbxVector4 vertex = pMesh->mControlPoints[vIndex].mData;
-		FbxVector4 normal = (*normals)[vIndex];	//use the vertex index to get the normal index
-		float unitOut[8] =
-		{
-			static_cast<float>(vertex[0]),
-			static_cast<float>(vertex[1]),
-			static_cast<float>(vertex[2]),
-			//static_cast<float>(vertex[3]),
-			1.0f,
-			static_cast<float>(normal[0]),
-			static_cast<float>(normal[1]),
-			static_cast<float>(normal[2]),
-			//static_cast<float>(normal[3]),
-			0.0f
-		};
-		of.write((const char *)&unitOut, sizeof(float)*8);
-	}
-
-	for(unsigned _int32 iIndex = 0; iIndex < iCount; ++iIndex)
-	{
-		unsigned _int32 indexOut = static_cast<unsigned _int32>(pMesh->mPolygonVertices[iIndex]);
-		of.write((const char *)&indexOut, sizeof(unsigned _int32));
-	}
 }
 
 /**
@@ -288,29 +249,6 @@ void getMeshData(FbxManager *pFbxMgr, Mesh &mesh, FbxNode *node)
 					break;
 				}
 			}
-
-			unsigned _int32 tCount = property.GetSrcObjectCount<FbxFileTexture>();
-			cout << "Num textures: " << tCount << endl;
-			/*
-			FbxFileTexture *texture = property.Get<FbxFileTexture*>();
-			if(texture)
-			{
-				if(!mesh.pStrDiffuseFile)
-				{
-					cout << "Found initial diffuse texture file: " << texture->GetFileName() << endl;
-					mesh.pStrDiffuseFile = new std::string(texture->GetFileName());
-				}
-				else if(mesh.pStrDiffuseFile->compare(std::string(texture->GetFileName())) != 0)
-				{
-					cout << "Found another diffuse channel file name.  Old: " << (*mesh.pStrDiffuseFile)
-						<< " New: " << texture->GetFileName() << endl;
-				}
-			}
-			else 
-			{
-				cout << "No texture" << endl;
-			}
-			*/
 		}
 	}
 
@@ -320,20 +258,45 @@ void getMeshData(FbxManager *pFbxMgr, Mesh &mesh, FbxNode *node)
 		//if we don't have a triangle mesh...make it one
 		if(!pMesh->IsTriangleMesh())
 		{
+			cout << "Performing triangulation..." << endl;
 			FbxGeometryConverter fbxGc(pFbxMgr);
 			pMesh = (FbxMesh*)fbxGc.Triangulate(pMesh, true);	//could triangulate in place
 			//fbxGc.Triangulate(pMesh, true);	//could triangulate in place
 		}
-		
+
 		pMesh->GenerateNormals(true, true, false);	//compute normals
 		FbxLayerElementArrayTemplate<FbxVector4> *normals = nullptr;	//create place to hold normals
 		pMesh->GetNormals(&normals);	//write normals here
+		
+		cout << "UV layer count " << pMesh->GetUVLayerCount() << endl;
+		FbxStringList lUVSetNameList;
+		pMesh->GetUVSetNames(lUVSetNameList);
 
+		FbxLayerElementArrayTemplate<FbxVector2> *uvCoordinates = nullptr;
+		//iterating over all uv sets -- TODO: limit to just one set? What useful situation would have more than one?
+		for (int lUVSetIndex = 0; lUVSetIndex < lUVSetNameList.GetCount(); lUVSetIndex++)
+		{
+			//get lUVSetIndex-th uv set
+			const char* lUVSetName = lUVSetNameList.GetStringAt(lUVSetIndex);
+			cout << "UV set name: {" << lUVSetIndex << "}" << lUVSetName << endl;
+			pMesh->GetTextureUV(&uvCoordinates, FbxLayerElement::eTextureDiffuse);
+			int uvCount = uvCoordinates->GetCount();
+			cout << "Number of texture coordinates: " << uvCount  << endl;
+			if(uvCount != pMesh->mPolygonVertices.Size())
+			{
+				cerr << "Number of indices (" << pMesh->mPolygonVertices.Size() <<
+					") not equal to the number of texture coordinates (" << uvCount <<
+					"). Skipping this set..." << endl;
+				
+			}
+		}
+		
 		unsigned _int32 indexOffset = static_cast<unsigned _int32>(mesh.indices.size());
 		for(_int32 vIndex = 0; vIndex < pMesh->GetControlPointsCount(); ++vIndex)
 		{
 			mesh.vertices.push_back(MultiplyMatrixCM(node->EvaluateGlobalTransform(), pMesh->mControlPoints[vIndex]));
 			mesh.normals.push_back(MultiplyMatrixCM(node->EvaluateGlobalTransform(), (*normals)[vIndex]));
+			mesh.uv.push_back(FbxVector2((*uvCoordinates)[vIndex]));
 		}
 
 		for(_int32 iIndex = 0; iIndex < pMesh->mPolygonVertices.Size(); ++iIndex)

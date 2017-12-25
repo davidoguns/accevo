@@ -121,6 +121,8 @@ namespace Accevo
 		
 		//loads texture to a surface and makes it minimally a shader resource
 		GraphicsResource * LoadTexture(wchar_t const *filename);
+
+		void DrawFps(AFLOAT32 fps);
 		
 	protected:
 		bool GetGraphicsConfiguration(SubsystemConfiguration const & gcRequested);

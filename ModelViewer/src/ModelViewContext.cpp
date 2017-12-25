@@ -52,20 +52,20 @@ void ModelViewContext::Start()
 	m_pPS->AttachShader(m_pGraphics->GetImmediateDeviceContext());
 
 	//Load mesh from file
-	m_pMesh = new Mesh(m_pGraphics, L"models\\dude.am");
+	std::wstring textureFile = L"models\\woman.am";
+	m_pMesh = new Mesh(m_pGraphics, textureFile.c_str());
 	if(!m_pMesh->IsInitialized())
 	{
-		AELOG_ERROR(m_pLogger, L"Could not load model from disk -- models\\sphere.am");
+		AELOG_ERROR(m_pLogger, (boost::wformat(L"Could not load model from disk -- %1%") % textureFile.c_str()).str().c_str());
 		m_pKernel->Stop();
 	}
 
 	//triangle list
 	m_pGraphics->GetImmediateDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-
 	//initialize fps notifier process
 	m_pFpsNotifier = new Accevo::FpsNotifierProcess();
-	m_pFpsNotifier->RegisterNotifications(2.0f, this);
+	m_pFpsNotifier->RegisterNotifications(.2f, this);
 	m_pKernel->GetProcessManager()->AddProcess(m_pFpsNotifier, true);
 }
 
@@ -165,6 +165,8 @@ void ModelViewContext::Update(float dt)
 
 	m_pMesh->Draw(pDev);
 
+	m_pGraphics->DrawFps(m_fps);
+
 	m_pGraphics->Present();
 }
 
@@ -176,5 +178,6 @@ void ModelViewContext::PostUpdate(float dt)
 //From Accevo::FpsNotifierProcess::FpsListener
 void ModelViewContext::NotifyFps(AFLOAT32 fps)
 {
-	AELOG_INFO(m_pLogger, (format("Current FPS from ModelViewer: %1%")%fps).str().c_str());
+	m_fps = fps;
+	//AELOG_INFO(m_pLogger, (format("Current FPS from ModelViewer: %1%")%fps).str().c_str());
 }

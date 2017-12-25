@@ -12,6 +12,9 @@ namespace Accevo {
 class Mesh
 {
 public:
+	static const AUINT32 VERTEX_STRIDE_SIZE_NUM_FLOATS;
+
+public:
 	Mesh(Mesh const &) = delete;
 	Mesh& operator=(Mesh const &) = delete;
 	Mesh(GraphicsLayer *pGraphics, wchar_t const * file);	//self loading in this temporary solution approach
@@ -34,6 +37,7 @@ protected:
 	ABOOL				m_bInitialized;			//true if initialized successfully
 	ID3D11Buffer		*m_pIndexBuffer;		//with normals
 	ID3D11Buffer		*m_pVertexBuffer;
+	
 	AUINT32				m_nPolygons;
 	AUINT32				m_nVertices;
 	AUINT32				m_nIndices;

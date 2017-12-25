@@ -12,6 +12,7 @@
 struct Mesh
 {
 	std::list<FbxVector4>			vertices;
+	std::list<FbxVector2>			uv;
 	std::list<FbxVector4>			normals;
 	std::list<unsigned _int32>		indices;
 	unsigned _int32					nPolygons;

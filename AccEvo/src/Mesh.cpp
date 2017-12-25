@@ -2,17 +2,22 @@
 //December 29, 2012
 //Mesh.h
 
+
 #include "Mesh.h"
 #include "DXUtil.h"
 #include <fstream>
 #include "EngineKernel.h"
 #include <boost\format.hpp>
 
+
+#define AE_LOG_OUTPUT_LEVEL AE_LOG_OUTPUT_TRACE
+
 using boost::wformat;
 using namespace std;
 
 namespace Accevo
 {
+const AUINT32 Mesh::VERTEX_STRIDE_SIZE_NUM_FLOATS = 12;
 
 //self loading in this temporary solution approach
 Mesh::Mesh(GraphicsLayer *pGraphics, wchar_t const * file) :
@@ -37,21 +42,23 @@ Mesh::Mesh(GraphicsLayer *pGraphics, wchar_t const * file) :
 	
 		D3D11_BUFFER_DESC vBufferDesc;
 		ZeroMemory(&vBufferDesc, sizeof(D3D11_BUFFER_DESC));		//clear structure
-		vBufferDesc.ByteWidth = m_nVertices * 8 * sizeof(AFLOAT32);	//8 = 4 xzyw pos, 4xyzw normal
+		vBufferDesc.ByteWidth = m_nVertices * VERTEX_STRIDE_SIZE_NUM_FLOATS * sizeof(AFLOAT32);
 		vBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		vBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;	//initialized and otherwise not touched
 		vBufferDesc.CPUAccessFlags = 0;	//initialized and otherwise not touched
 		//create structure to hold initial data
 		D3D11_SUBRESOURCE_DATA initVerts;
 		ZeroMemory(&initVerts, sizeof(D3D11_SUBRESOURCE_DATA));
-		initVerts.pSysMem = new AFLOAT32[m_nVertices * 8];	//allocate enough memory for all vertices
-		fin.read((char *)initVerts.pSysMem, sizeof(AFLOAT32) * m_nVertices * 8);	//read all vertices
+		initVerts.pSysMem = new AFLOAT32[m_nVertices * VERTEX_STRIDE_SIZE_NUM_FLOATS];	//allocate enough memory for all vertices
+		AELOG_INFO(ENGINE_LOGGER, (wformat(L"\Reading %1% bytes... for control points\n") % (sizeof(AFLOAT32) * m_nVertices * VERTEX_STRIDE_SIZE_NUM_FLOATS)).str().c_str()); //sizeof(AFLOAT32) * m_nVertices * VERTEX_STRIDE_SIZE_NUM_FLOATS)
+		fin.read((char *)initVerts.pSysMem, sizeof(AFLOAT32) * m_nVertices * VERTEX_STRIDE_SIZE_NUM_FLOATS);	//read all vertices
 		AFLOAT32 const *fdata = (AFLOAT32 const *)initVerts.pSysMem;
 		for(AUINT32 vIndex = 0; vIndex < m_nVertices; ++vIndex)
 		{
-			//AELOG_TRACE(ENGINE_LOGGER, (wformat(L"Point: (%1%,%2%,%3%,%4%)")%fdata[0]%fdata[1]%fdata[2]%fdata[3]).str().c_str());
-			//ELOG_TRACE(ENGINE_LOGGER, (wformat(L"Normal: (%1%,%2%,%3%,%4%)")%fdata[4]%fdata[5]%fdata[6]%fdata[7]).str().c_str());
-			fdata += 8;		//advance 8 float items
+			AELOG_TRACE(ENGINE_LOGGER, (wformat(L"\nPoint: (%1%,%2%,%3%,%4%)\n")%fdata[0]%fdata[1]%fdata[2]%fdata[3]).str().c_str());
+			AELOG_TRACE(ENGINE_LOGGER, (wformat(L"Texture: (%1%,%2%,%3%,%4%)\n") % fdata[4] % fdata[5] % fdata[6] % fdata[7]).str().c_str());
+			AELOG_TRACE(ENGINE_LOGGER, (wformat(L"Normal: (%1%,%2%,%3%,%4%)\n")%fdata[8]%fdata[9]%fdata[10]%fdata[11]).str().c_str());
+			fdata += VERTEX_STRIDE_SIZE_NUM_FLOATS;		//float items: 4 float pos, 4 float uv, 4 float normal
 		}
 		//create buffer
 		pDev->CreateBuffer(&vBufferDesc, &initVerts, &m_pVertexBuffer);
@@ -68,6 +75,7 @@ Mesh::Mesh(GraphicsLayer *pGraphics, wchar_t const * file) :
 		D3D11_SUBRESOURCE_DATA initIdx;
 		ZeroMemory(&initIdx, sizeof(D3D11_SUBRESOURCE_DATA));
 		initIdx.pSysMem = new AUINT32[m_nIndices];
+		AELOG_INFO(ENGINE_LOGGER, (wformat(L"\Reading %1% bytes... for indices...\n") % (sizeof(AUINT32)*m_nIndices)).str().c_str()); //sizeof(AFLOAT32) * m_nVertices * VERTEX_STRIDE_SIZE_NUM_FLOATS
 		fin.read((char *)initIdx.pSysMem, sizeof(AUINT32)*m_nIndices);
 		//create buffer
 		pDev->CreateBuffer(&iBufferDesc, &initIdx, &m_pIndexBuffer);
@@ -89,7 +97,7 @@ Mesh::~Mesh()
 void Mesh::Draw(ID3D11DeviceContext *pDevice)
 {
 	pDevice->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	AUINT32 stride = 8 * sizeof(AFLOAT32);
+	AUINT32 stride = Mesh::VERTEX_STRIDE_SIZE_NUM_FLOATS * sizeof(AFLOAT32);
 	AUINT32 offset = 0;
 	pDevice->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pDevice->DrawIndexed(m_nIndices, 0, 0);

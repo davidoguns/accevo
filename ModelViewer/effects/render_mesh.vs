@@ -22,7 +22,7 @@ VS_OUTPUT vs_main(in VS_INPUT vs_in)
 		(proj));
 
 	//assuming transformation matrices are affine,
-	//we can multiple a normal vector by the matrix as well
+	//we can multiply a normal vector by the matrix as well
 	vs_out.normal = mul(vs_in.normal, tworld);
 	
 	return vs_out;
