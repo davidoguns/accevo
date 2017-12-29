@@ -16,6 +16,7 @@
 #include "StringIdentifier.h"
 #include "Logger.h"
 #include <boost/property_tree/ptree.hpp>
+#include <DirectXTex.h>
 
 namespace Accevo
 {

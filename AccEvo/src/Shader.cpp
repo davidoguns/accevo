@@ -45,9 +45,9 @@ Shader::~Shader()
 
 //derives information from the shader loaded into the blob to initialize shader interface fully
 //returns the shader reflector to the caller for derived classes to use further
-ABOOL Shader::ReflectShader(ID3D11Device *pDevice, ID3D10Blob *vsBlob, ID3D11ShaderReflection* &pReflector)
+ABOOL Shader::ReflectShader(ID3D11Device *pDevice, ID3DBlob *sBlob, ID3D11ShaderReflection* &pReflector)
 {
-	m_hr = D3DReflect( vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), 
+	m_hr = D3DReflect(sBlob->GetBufferPointer(), sBlob->GetBufferSize(),
            IID_ID3D11ShaderReflection, (void**) &pReflector);
 	AELOG_DXERR_CONDITIONAL_CODE_ERROR(ENGINE_LOGGER, L"Could not create shader reflector from blob!!!", m_hr,
 		return false);
@@ -62,7 +62,7 @@ ABOOL Shader::ReflectShader(ID3D11Device *pDevice, ID3D10Blob *vsBlob, ID3D11Sha
 		return false;
 	}
 
-	if(!CreateConstantBuffers(pDevice, vsBlob, pReflector))
+	if(!CreateConstantBuffers(pDevice, sBlob, pReflector))
 	{
 		AELOG_ERROR(ENGINE_LOGGER, L"Could not create constant buffers!!!");
 		return false;
@@ -90,16 +90,15 @@ ABOOL Shader::InitializeShaderResourceSlots(ID3D11ShaderReflection *pReflector)
 
 		if(pShaderResourceDescs[srvBindIndex].Type == D3D10_SIT_SAMPLER)
 		{
-			m_SamplerStateByName[pShaderResourceDescs[srvBindIndex].Name] = m_nSamplerStates;
+			m_SamplerStateByName.Insert(HashString(pShaderResourceDescs[srvBindIndex].Name), m_nSamplerStates);
 			++m_nSamplerStates;
 		}
 		else
 		{
-			m_ShaderResourceViewByName[pShaderResourceDescs[srvBindIndex].Name] = m_nShaderResourceViews;
+			m_ShaderResourceViewByName.Insert(HashString(pShaderResourceDescs[srvBindIndex].Name), m_nShaderResourceViews);
 			++m_nShaderResourceViews;
 		}
 
-		/*
 		format str = format("SHADER RESOURCE VIEW:  Name: %1% || Type: %2% || BindPoint: %3% || BindCount: %4% || ReturnType: %5% || Dimension: %6%")
 			% pShaderResourceDescs[srvBindIndex].Name
 			% pShaderResourceDescs[srvBindIndex].Type
@@ -107,8 +106,7 @@ ABOOL Shader::InitializeShaderResourceSlots(ID3D11ShaderReflection *pReflector)
 			% pShaderResourceDescs[srvBindIndex].BindPoint
 			% pShaderResourceDescs[srvBindIndex].ReturnType
 			% pShaderResourceDescs[srvBindIndex].Dimension;
-		wcout << str.str().c_str() << endl;
-		*/
+		AELOG_INFO(ENGINE_LOGGER, str.str().c_str());
 	}
 
 	m_pShaderResourceViews = shared_array<ID3D11ShaderResourceView *>(new ID3D11ShaderResourceView*[m_nShaderResourceViews]);
@@ -150,19 +148,19 @@ ABOOL Shader::CreateConstantBuffers(ID3D11Device *pDevice, ID3D10Blob *pBlob, ID
 			bufferDesc.MiscFlags = 0;
 			bufferDesc.StructureByteStride = 0;
 			bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-			/*format str = format("SHADER CBUFFER:  Name: %1% || Size: %2% || Type: %3% || Flags: %4% || Variables %5%")
+			format str = format("SHADER CBUFFER:  Name: %1% || Size: %2% || Type: %3% || Flags: %4% || Variables %5%")
 				% m_pConstantBufferDescs[cbIndex].Name
 				% m_pConstantBufferDescs[cbIndex].Size
 				% m_pConstantBufferDescs[cbIndex].Type
 				% m_pConstantBufferDescs[cbIndex].uFlags
 				% m_pConstantBufferDescs[cbIndex].Variables;
 
-			wcout << str.str().c_str() << endl; */
+			AELOG_INFO(ENGINE_LOGGER, str.str().c_str());
 			m_hr = pDevice->CreateBuffer(&bufferDesc, NULL, &m_pConstantBuffers[cbIndex]);
 			AELOG_DXERR_CONDITIONAL_CODE_ERROR(ENGINE_LOGGER, L"Could not create shader cbuffer!!!", m_hr, return false);
 			//add to stl map to be looked up by name later
-			m_mapCBufferByName[m_pConstantBufferDescs[cbIndex].Name] = 
-				cbIndex;
+			
+			m_mapCBufferByName.Insert(HashString(m_pConstantBufferDescs[cbIndex].Name), cbIndex);
 		}
 		else
 		{
@@ -176,7 +174,7 @@ ABOOL Shader::CreateConstantBuffers(ID3D11Device *pDevice, ID3D10Blob *pBlob, ID
 
 void Shader::SetConstantBufferDataByName(ID3D11DeviceContext *pDeviceContext, const char *name, void const *pData)
 {
-	SetConstantBufferDataByIndex(pDeviceContext, m_mapCBufferByName.find(name)->second, pData);
+	SetConstantBufferDataByIndex(pDeviceContext, m_mapCBufferByName.Get(HashString(name)), pData);
 }
 
 void Shader::SetConstantBufferDataByIndex(ID3D11DeviceContext *pDeviceContext, unsigned int index, void const *pData)
@@ -201,8 +199,7 @@ void Shader::ApplyConstantBuffers(ID3D11DeviceContext *pDeviceContext,
 void Shader::SetShaderResourceByName(ID3D11DeviceContext *pDeviceContext, 
 	const char *name, ID3D11ShaderResourceView *pShaderResourceView)
 {
-	SetShaderResourceByIndex(pDeviceContext, m_ShaderResourceViewByName.find(name)->second,
-		pShaderResourceView);
+	SetShaderResourceByIndex(pDeviceContext, m_ShaderResourceViewByName.Get(HashString(name)), pShaderResourceView);
 }
 
 void Shader::SetShaderResourceByIndex(ID3D11DeviceContext *pDeviceContext,
@@ -222,7 +219,7 @@ void Shader::ApplyShaderResources(ID3D11DeviceContext *pDeviceContext,
 void Shader::SetSamplerStateByName(ID3D11DeviceContext *pDeviceContext, 
 	const char *name, ID3D11SamplerState *pSamplerState)
 {
-	SetSamplerStateByIndex(pDeviceContext, m_SamplerStateByName.find(name)->second, pSamplerState);
+	SetSamplerStateByIndex(pDeviceContext, m_SamplerStateByName.Get(HashString(name)), pSamplerState);
 }
 
 void Shader::SetSamplerStateByIndex(ID3D11DeviceContext *pDeviceContext, 

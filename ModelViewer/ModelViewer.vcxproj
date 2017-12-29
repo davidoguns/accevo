@@ -69,8 +69,8 @@
     <LibraryPath>C:\Users\david\source\repos\accevo\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\ebonyseraph\source\lib\boost;C:\Users\ebonyseraph\source\repos\accevo\x64\Release\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\ebonyseraph\source\repos\accevo\x64\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\ebonyseraph\source\lib\boost;C:\Users\ebonyseraph\source\repos\DirectXTex\DirectXTex;C:\Users\ebonyseraph\source\repos\accevo\x64\Release\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\ebonyseraph\source\repos\accevo\x64\Release;C:\Users\david\source\repos\DirectXTex\DirectXTex\Bin\Desktop_2017\x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -115,7 +115,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;dinput8.lib;d3dcompiler.lib;dxguid.lib;d2d1.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dinput8.lib;d3dcompiler.lib;dxguid.lib;d2d1.lib;dwrite.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

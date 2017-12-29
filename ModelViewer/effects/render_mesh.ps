@@ -7,24 +7,35 @@ cbuffer cbOutColor
 	float4	color;
 };
 
-
 cbuffer cbLights
 {
 	float4	A;		//ambient, r,g,b,(unusued)
 	float4	pointPosition;
 	float4	pointColor;
 	float4	pointAttenuation;	
-}
+};
+
+Texture2D g_MeshTexture;
+
+SamplerState MeshTextureSampler
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
+};
 
 PS_OUTPUT ps_main(const in VS_OUTPUT ps_in)
 {
 	PS_OUTPUT ps_out;
-	ps_out.color = color * A;	//multiply by ambient light
+	//float4 texColor = g_MeshTexture.Sample(MeshTextureSampler, ps_in.uv);
+	float2 uv = {ps_in.uv[0], ps_in.uv[1]};
+	float4 texColor = g_MeshTexture.Sample(MeshTextureSampler, uv); //{0.4f, 0.0f, 0.0f, 1.0f};
+	ps_out.color = texColor * A;							//multiply by ambient light
 	float4 lightDir = ps_in.pos - pointPosition;
-	float d = dot(ps_in.normal, lightDir);	//dot scalar factor
-	float dist = distance(ps_in.pos, pointPosition);	//distance to light source
+	float d = dot(ps_in.normal, lightDir);					//dot scalar factor
+	float dist = distance(ps_in.pos, pointPosition);		//distance to light source
 	float a = 1.0f/(pointAttenuation.x + pointAttenuation.y*dist + pointAttenuation.z*pow(dist,2));  //attenuation factor
-	ps_out.color += a * d * pointColor;		//attenuation, times dot product, times the color of the point
+	ps_out.color += a * d * texColor;						//attenuation, times dot product, times the color of the point
 	
 	return ps_out;
 }

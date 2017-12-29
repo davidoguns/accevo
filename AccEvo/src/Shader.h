@@ -10,7 +10,7 @@
 #include <D3Dcompiler.h>
 #include "DXUtil.h"
 
-#include <map>
+#include "StringMap.h"
 #include <vector>
 
 #define BOOST_MEM_FN_ENABLE_STDCALL
@@ -92,15 +92,15 @@ protected:
 
 	boost::shared_array<ID3D11Buffer*>					m_pConstantBuffers;		//array of constant buffers to use this vertex shader
 	boost::shared_array<D3D11_SHADER_BUFFER_DESC>		m_pConstantBufferDescs;	//array of descriptions to constant buffers
-	std::map<const char *, unsigned int, lessThanStr>	m_mapCBufferByName;		//map of names to constant buffer indices
+	StringMap<unsigned int>								m_mapCBufferByName;		//map of names to constant buffer indices
 
 	unsigned int										m_nShaderResourceViews;	//number of resource views
 	boost::shared_array<ID3D11ShaderResourceView *>		m_pShaderResourceViews;	//array of resource views
-	std::map<const char *, unsigned int, lessThanStr>	m_ShaderResourceViewByName;	//map of names to shader resource indices
+	StringMap<unsigned int>								m_ShaderResourceViewByName;	//map of names to shader resource indices
 	
 	unsigned int										m_nSamplerStates;		//number of sampler states
 	boost::shared_array<ID3D11SamplerState *>			m_pSamplerStates;		//array of sampler states
-	std::map<const char *, unsigned int, lessThanStr>	m_SamplerStateByName;	//map of names to sampler state indices
+	StringMap<unsigned int>								m_SamplerStateByName;	//map of names to sampler state indices
 };
 
 }

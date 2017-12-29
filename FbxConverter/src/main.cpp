@@ -273,15 +273,22 @@ void getMeshData(FbxManager *pFbxMgr, Mesh &mesh, FbxNode *node)
 		pMesh->GetUVSetNames(lUVSetNameList);
 
 		FbxLayerElementArrayTemplate<FbxVector2> *uvCoordinates = nullptr;
+
+		FbxLayerElementArrayTemplate<int> *pTextureIndices = nullptr;
+
+
 		//iterating over all uv sets -- TODO: limit to just one set? What useful situation would have more than one?
 		for (int lUVSetIndex = 0; lUVSetIndex < lUVSetNameList.GetCount(); lUVSetIndex++)
 		{
+
+			pMesh->InitTextureIndices(FbxLayerElement::EMappingMode::eByControlPoint, FbxLayerElement::eTextureDiffuse);
 			//get lUVSetIndex-th uv set
 			const char* lUVSetName = lUVSetNameList.GetStringAt(lUVSetIndex);
 			cout << "UV set name: {" << lUVSetIndex << "}" << lUVSetName << endl;
 			pMesh->GetTextureUV(&uvCoordinates, FbxLayerElement::eTextureDiffuse);
 			int uvCount = uvCoordinates->GetCount();
 			cout << "Number of texture coordinates: " << uvCount  << endl;
+			
 			if(uvCount != pMesh->mPolygonVertices.Size())
 			{
 				cerr << "Number of indices (" << pMesh->mPolygonVertices.Size() <<
@@ -289,6 +296,8 @@ void getMeshData(FbxManager *pFbxMgr, Mesh &mesh, FbxNode *node)
 					"). Skipping this set..." << endl;
 				
 			}
+			pMesh->GetTextureIndices(&pTextureIndices, FbxLayerElement::eTextureDiffuse);
+			cout << "Number of texture indices: " << pTextureIndices->GetCount() << endl;
 		}
 		
 		unsigned _int32 indexOffset = static_cast<unsigned _int32>(mesh.indices.size());

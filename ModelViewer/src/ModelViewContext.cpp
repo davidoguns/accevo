@@ -52,11 +52,19 @@ void ModelViewContext::Start()
 	m_pPS->AttachShader(m_pGraphics->GetImmediateDeviceContext());
 
 	//Load mesh from file
-	std::wstring textureFile = L"models\\woman.am";
-	m_pMesh = new Mesh(m_pGraphics, textureFile.c_str());
+	std::wstring modelFile = L"models\\dude.am";
+	m_pMesh = new Mesh(m_pGraphics, modelFile.c_str());
 	if(!m_pMesh->IsInitialized())
 	{
-		AELOG_ERROR(m_pLogger, (boost::wformat(L"Could not load model from disk -- %1%") % textureFile.c_str()).str().c_str());
+		AELOG_ERROR(m_pLogger, (boost::wformat(L"Could not load model from disk -- %1%") % modelFile.c_str()).str().c_str());
+		m_pKernel->Stop();
+	}
+
+	std::wstring textureFile = L"models\\dude_diffuse.tga";
+	m_pTexture = m_pGraphics->LoadTexture(textureFile.c_str());
+	if(!m_pTexture)
+	{
+		AELOG_ERROR(m_pLogger, (boost::wformat(L"Could not load texture from disk -- %1%") % textureFile.c_str()).str().c_str());
 		m_pKernel->Stop();
 	}
 
@@ -101,7 +109,6 @@ void ModelViewContext::PreUpdate(float dt)
 	{
 		dt *= 5.0f;	//accelerate everything by 5 if control is held down
 	}
-
 	if(m_pInput->IsControl(AEINPUT_GAMECTRL_KEYBOARD | DIK_W | AEINPUT_CTRLACTION_DOWN))
 	{
 		viewHeight += dt * 10.0f;
@@ -148,20 +155,22 @@ void ModelViewContext::Update(float dt)
 		XMMatrixTranspose(XMMatrixPerspectiveFovLH(XM_PI/3.0f, 16.0f/9.0f, 0.1f, 1000.0f))
 	};
 	
-	XMFLOAT4	color(0.8f, 0.1f, 0.2f, 1.0f);	//color for PS
+	XMFLOAT4 color(0.8f, 0.1f, 0.2f, 1.0f);	//color for PS
 	CB_Lights cbLights;
-	cbLights.ambient = XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f);
+	cbLights.ambient = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	cbLights.pointPosition = XMFLOAT4(30.0f, 0.0f, -70.0f, 1.0f);
 	cbLights.pointColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	cbLights.pointAttenuation = XMFLOAT4(3.0f, 0.4f, 0.001f, 1.0f);
-		
-	XMFLOAT4	lightAmbient(0.15f, 0.15f, 0.15f, 1.0f);	//ambient light
-	
+
 	//now ready to make some calls
 	ID3D11DeviceContext *pDev = m_pGraphics->GetImmediateDeviceContext();
 	m_pVS->SetConstantBufferDataByName(pDev, "cbWorldViewProj", (void const *)worldViewProj);
-	m_pPS->SetConstantBufferDataByName(pDev, "cbOutColor", (void const *)&color);
+	//m_pPS->SetConstantBufferDataByName(pDev, "cbOutColor", (void const *)&color);
 	m_pPS->SetConstantBufferDataByName(pDev, "cbLights", (void const *)&cbLights);
+	//m_pPS->SetShaderResourceByName(pDev, "g_MeshTexture", m_pTexture->GetShaderResourceView());
+	//m_pPS->SetShaderResourceByIndex(pDev, 0, m_pTexture->GetShaderResourceView());
+	
+	//m_pGraphics->GetImmediateDeviceContext()->PSGetSamplers(0, 0, nullptr);
 
 	m_pMesh->Draw(pDev);
 
@@ -179,5 +188,5 @@ void ModelViewContext::PostUpdate(float dt)
 void ModelViewContext::NotifyFps(AFLOAT32 fps)
 {
 	m_fps = fps;
-	//AELOG_INFO(m_pLogger, (format("Current FPS from ModelViewer: %1%")%fps).str().c_str());
+	AELOG_INFO(m_pLogger, (format("Current FPS from ModelViewer: %1%")%fps).str().c_str());
 }

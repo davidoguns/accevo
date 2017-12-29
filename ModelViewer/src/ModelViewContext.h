@@ -50,10 +50,11 @@ protected:
 	Accevo::PixelShader					*m_pPS;
 
 	Accevo::Mesh						*m_pMesh;
+	Accevo::GraphicsResource			*m_pTexture{ nullptr };
 
 	Accevo::AFLOAT32					viewHeight;
 	Accevo::AFLOAT32					viewDistance;
-	DirectX::XMFLOAT4X4							world;
+	DirectX::XMFLOAT4X4					world;
 	Accevo::AFLOAT32					rotation;
 	Accevo::AFLOAT32					m_fps{ 0.f };
 };

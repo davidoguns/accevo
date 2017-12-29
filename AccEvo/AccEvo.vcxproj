@@ -143,7 +143,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\ebonyseraph\source\lib\boost;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\ebonyseraph\source\lib\boost;C:\Users\ebonyseraph\source\repos\DirectXTex\DirectXTex;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

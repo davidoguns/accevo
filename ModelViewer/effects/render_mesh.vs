@@ -15,7 +15,7 @@ VS_OUTPUT vs_main(in VS_INPUT vs_in)
 	VS_OUTPUT vs_out;
 	matrix tworld = world;	//will be used more than once, calculate ahead
 	float4 wpos = mul(vs_in.pos, tworld);
-	
+
 	vs_out.pos = mul(mul(mul(vs_in.pos,
 		tworld),
 		(view)),
@@ -24,6 +24,7 @@ VS_OUTPUT vs_main(in VS_INPUT vs_in)
 	//assuming transformation matrices are affine,
 	//we can multiply a normal vector by the matrix as well
 	vs_out.normal = mul(vs_in.normal, tworld);
+	vs_out.uv = vs_in.uv;
 	
 	return vs_out;
 }

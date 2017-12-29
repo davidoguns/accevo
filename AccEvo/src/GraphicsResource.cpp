@@ -99,6 +99,3 @@ namespace Accevo
 		DX_RELEASE(m_pResource);
 	}
 }
-
-
-

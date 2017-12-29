@@ -10,15 +10,16 @@ struct PS_OUTPUT
 
 struct VS_INPUT
 {
-	float4 pos : SV_POSITION0;
-	float4 uv  : TEXCOORD0;
-	float4 normal : NORMAL;
+	float4 pos 		: SV_POSITION0;
+	float4 uv  		: TEXCOORD0;
+	float4 normal	: NORMAL;
 };
 
 struct VS_OUTPUT
 {
-	float4 pos : SV_POSITION;
-	float4 normal : NORMAL;
+	float4 pos 		: SV_POSITION;
+	float4 uv  		: TEXCOORD0;
+	float4 normal 	: NORMAL;
 };
 
 #endif

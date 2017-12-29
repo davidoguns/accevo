@@ -101,7 +101,7 @@ namespace Accevo
 		D3D11_RASTERIZER_DESC rDesc;
 		ZeroMemory(&rDesc, sizeof(D3D11_RASTERIZER_DESC));
 		rDesc.AntialiasedLineEnable = false;
-		rDesc.CullMode = D3D11_CULL_BACK;
+		rDesc.CullMode = D3D11_CULL_NONE;
 		rDesc.DepthBias = 0;
 		rDesc.DepthBiasClamp = 0.0f;
 		rDesc.DepthClipEnable = false;
@@ -681,38 +681,30 @@ namespace Accevo
 
 	GraphicsResource * GraphicsLayer::LoadTexture(wchar_t const *filename)
 	{
-		/*
-		HRESULT hr;
-		boost::optional<D3DX11_IMAGE_LOAD_INFO &> imgLoadInfo;
+		DirectX::ScratchImage sImg;
+		DirectX::TexMetadata tMetadata;
+		HRESULT hr = DirectX::LoadFromTGAFile(filename, &tMetadata, sImg);
+		//HRESULT hr = DirectX::LoadFromWICFile(filename, 0, &tMetadata, sImg);
+		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, "Could load image info for texture!!!", hr, return nullptr);
 
-		Handle hImgLoad;	//TODO: change //imageLoadInfoMgr.GetHandle(HashString("defaultImageLoad"));
-		imgLoadInfo = m_imageLoadInfoMgr.GetDataOptional(hImgLoad);
+		ID3D11Resource *pResource;
+		hr = DirectX::CreateTexture(m_pDevice, sImg.GetImages(), sImg.GetImageCount(), tMetadata, &pResource);
+		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, "Could not create D3D11 resource for texture!!!", hr, return nullptr);
 
-		imgLoadInfo->BindFlags = 0;
-		imgLoadInfo->CpuAccessFlags = D3DX11_DEFAULT;
-		imgLoadInfo->Depth = D3DX11_DEFAULT;
-		imgLoadInfo->Width = D3DX11_DEFAULT;
-		imgLoadInfo->Height = D3DX11_DEFAULT;
-		imgLoadInfo->Filter = D3DX11_DEFAULT;
-		imgLoadInfo->FirstMipLevel = D3DX11_DEFAULT;
-		imgLoadInfo->MipFilter = D3DX11_DEFAULT;
-		imgLoadInfo->MipLevels = D3DX11_DEFAULT;
-		imgLoadInfo->MiscFlags = D3DX11_DEFAULT;
-		imgLoadInfo->pSrcInfo = nullptr;
-		imgLoadInfo->Usage = D3D11_USAGE_DEFAULT;
-		imgLoadInfo->Format = DXGI_FORMAT_UNKNOWN;
-		ID3D11Resource *pResource = nullptr;
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		srvDesc.Format = tMetadata.format;
+		srvDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = 1;
+		srvDesc.Texture2D.MostDetailedMip = 0;
 
-		hr = D3DX11CreateTextureFromFile(
-			m_pDevice, filename, NULL, NULL, &pResource, NULL);
-		AELOG_DXERR_CONDITIONAL_CODE_ERROR(m_pLogger, L"Could not load texture from file!!!", hr, return false);
-		return new GraphicsResource(m_pLogger, m_pDevice, pResource,
-			imgLoadInfo->BindFlags,
-			nullptr, nullptr, nullptr, nullptr);
+		DirectX::ScratchImage sImgOut;
+		DirectX::TexMetadata tMetadataOut;
+		DirectX::CaptureTexture(m_pDevice, m_pImmediateDeviceContext, pResource, sImgOut);
 
-			*/
+		//TODO: debug verify what we loaded can be saved out correctly
+		DirectX::SaveToTGAFile(*sImgOut.GetImage(0, 0, 0), L"texture.tga");
 
-
-		return nullptr;	//TODO!! how to load textures!
+		return new GraphicsResource(m_pLogger, m_pDevice, pResource, D3D11_BIND_SHADER_RESOURCE,
+			nullptr, nullptr, &srvDesc, nullptr);
 	}
 }		//namespace Accevo

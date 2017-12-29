@@ -4,12 +4,14 @@
 #ifndef _HASHED_STRING_H_
 #define _HASHED_STRING_H_
 
+
 #include <boost/crc.hpp>
 #include <string>
+#include "aetypes.h"
 
 namespace Accevo
 {
-	typedef unsigned int		StringIdentifier;
+	typedef AUINT32		StringIdentifier;
 
 	struct StringIdentifierCmp
 	{
@@ -22,13 +24,14 @@ namespace Accevo
 
 #if(defined(_DEBUG) || defined(DEBUG))
 	void AddSID(StringIdentifier sid, char const *string);
+	void AddSID(StringIdentifier sid, wchar)_t const *string);
 #endif
 
 	#define SID(id) (Accevo::HashString(id))
 
 	//runtime hashing of string
 	StringIdentifier HashString(char const *string);
-
+	StringIdentifier HashString(wchar_t const *string);
 };
 
 #endif

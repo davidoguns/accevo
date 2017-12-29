@@ -11,7 +11,7 @@
 namespace Accevo
 {
 
-#if(defined(_DEBUG) || defined(DEBUG))
+//#if(defined(_DEBUG) || defined(DEBUG))
 	StringMap<const char *>				g_StringIdentifiers;
 
 	void AddSID(StringIdentifier sid, const char *string)
@@ -36,7 +36,7 @@ namespace Accevo
 	{
 		StringIdentifier sid;
 		boost::crc_32_type result;
-		result.process_bytes(string, strlen(string));
+		result.process_bytes(string, strlen(string) * sizeof(char));
 		sid = result.checksum();
 #if(defined(_DEBUG) || defined(DEBUG))
 		AddSID(sid, InternString(string));
@@ -44,5 +44,16 @@ namespace Accevo
 		return sid;
 	}
 
-#endif
+	//runtime hashing of string
+	//TODO: no string interning of wide character strings
+	StringIdentifier HashString(wchar_t const *string)
+	{
+		StringIdentifier sid;
+		boost::crc_32_type result;
+		result.process_bytes(string, wcslen(string) * sizeof(wchar_t));
+		sid = result.checksum();
+		return sid;
+	}
+
+//#endif
 }
